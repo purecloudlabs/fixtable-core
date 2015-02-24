@@ -1,10 +1,12 @@
 module.exports = ( grunt, options ) ->
+  options:
+    sourceMap: true
+    extDot: 'last'
+
   dev:
     options:
       sourceMap: true
-    expand: false
-    cwd: 'coffee'
-    src: '**/*.coffee'
-    dest: 'dist'
-    ext: '.js'
-    extDot: 'last'
+
+  vanilla:
+    files:
+      'dist/fixie.js': ['coffee/fixie.coffee']
