@@ -3,4 +3,4 @@ module.exports = ( grunt, options ) ->
     options:
       style: 'expanded'
     files:
-      'css/app.css': 'scss/global.scss'
+      'css/fixie.css': 'scss/fixie.scss'

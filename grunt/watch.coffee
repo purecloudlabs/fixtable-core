@@ -8,8 +8,7 @@ module.exports = ( grunt, options ) ->
       'coffee/**/*.coffee'
     ]
     tasks: [
-      'newer:coffee'
-      'notify:coffee'
+      'coffee'
     ]
 
   sass:
@@ -19,5 +18,4 @@ module.exports = ( grunt, options ) ->
     tasks: [
       'sass'
       'autoprefixer'
-      'notify:sass'
     ]
