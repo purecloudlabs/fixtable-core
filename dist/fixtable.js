@@ -11,7 +11,9 @@
       return this.headers = this.el.find('thead');
     };
 
-    Fixie.prototype._bindEvents = function() {};
+    Fixie.prototype._bindEvents = function() {
+      return console.log('foo');
+    };
 
     Fixie.prototype._getHeaderHeight = function() {
       return this.headers.find('div').outerHeight();

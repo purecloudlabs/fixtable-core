@@ -3,19 +3,45 @@ module.exports =
     'dist'
   ]
 
-  dist: [
+
+
+
+
+  dev: [
     'clean'
     'buildCSS'
     'buildJS'
   ]
 
+  dist: [
+    'clean'
+    'distCSS'
+    'distJS'
+  ]
+
+
+
+
+
   buildCSS: [
     'copy:css'
     'autoprefixer'
-    'cssmin'
   ]
 
   buildJS: [
     'coffee'
+  ]
+
+
+
+
+
+  distCSS: [
+    'buildCSS'
+    'cssmin'
+  ]
+
+  distJSS: [
+    'buildJS'
     'uglify'
   ]

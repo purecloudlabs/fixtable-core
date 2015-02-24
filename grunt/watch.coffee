@@ -4,7 +4,7 @@ module.exports = ( grunt, options ) ->
       'coffee/**/*.coffee'
     ]
     tasks: [
-      'coffee'
+      'buildJS'
     ]
 
   sass:
@@ -12,6 +12,5 @@ module.exports = ( grunt, options ) ->
       'scss/**/*.scss'
     ]
     tasks: [
-      'sass'
-      'autoprefixer'
+      'buildCSS'
     ]
