@@ -1,3 +1,4 @@
 module.exports = ( grunt, options ) ->
-  vanilla:
-    'dist/fixie.min.js': ['dist/fixie.js']
+  huxtable:
+    files:
+      'dist/huxtable.min.js': ['dist/huxtable.js']

@@ -1,4 +1,2 @@
 module.exports =
-  default: [
-    'server'
-  ]
+  default: []

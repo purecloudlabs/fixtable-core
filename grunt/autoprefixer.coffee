@@ -1,6 +1,6 @@
 module.exports = ( grunt, options ) ->
-  app:
+  huxtable:
     options:
       map: true
-    src: 'css/fixie.css'
-    dest: 'css/fixie.css'
+    src: 'dist/huxtable.css'
+    dest: 'dist/huxtable.css'
