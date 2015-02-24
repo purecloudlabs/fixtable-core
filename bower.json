@@ -5,6 +5,19 @@
   "authors": [
     "Interactive Intelligence"
   ],
+  "contributors": [
+    {
+      "name": "Brian Herold",
+      "email": "brian.herold@inin.com"
+    }, {
+      "name": "Michael McAuley",
+      "email": "mike.mcauley@inin.com",
+    }, {
+      "name": "Trezy",
+      "email": "tre@trezy.com",
+      "url": "http://trezy.com"
+    }
+  ],
   "description": "A grid library to present tabular data",
   "main": ["./css/fixtable.css", "dist/fixtable.min.js"],
   "moduleType": [
