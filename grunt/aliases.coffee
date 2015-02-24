@@ -10,7 +10,7 @@ module.exports =
   ]
 
   buildCSS: [
-    'sass'
+    'copy:css'
     'autoprefixer'
     'cssmin'
   ]
