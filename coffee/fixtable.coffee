@@ -8,6 +8,7 @@ class Fixie
     @headers = @el.find 'thead'
 
   _bindEvents: ->
+    console.log 'foo'
 
   _getHeaderHeight: ->
     return @headers.find('div').outerHeight()
