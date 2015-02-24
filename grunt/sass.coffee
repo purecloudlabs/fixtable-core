@@ -1,5 +1,5 @@
 module.exports = ( grunt, options ) ->
-  dev:
+  default:
     options:
       style: 'expanded'
     files:

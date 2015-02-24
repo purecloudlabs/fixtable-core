@@ -1,5 +1,5 @@
 module.exports = ( grunt, options ) ->
-  app:
+  dev:
     options:
       sourceMap: true
     expand: false

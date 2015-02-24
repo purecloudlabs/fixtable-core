@@ -1,8 +1,4 @@
 module.exports = ( grunt, options ) ->
-  options:
-    spawn: true
-    interrupt: true
-
   coffee:
     files: [
       'coffee/**/*.coffee'

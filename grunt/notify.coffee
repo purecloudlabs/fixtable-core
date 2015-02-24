@@ -1,4 +1,8 @@
 module.exports = ( grunt, options ) ->
-  dist:
+  coffee:
     options:
-      message: 'dist built'
+      message: 'coffeescript compiled'
+
+  sass:
+    options:
+      message: 'sass compiled'
