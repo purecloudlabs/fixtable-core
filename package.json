@@ -16,17 +16,9 @@
   ],
   "author": "Interactive Intelligence",
   "contributors": [
-    {
-      "name": "Brian Herold",
-      "email": "brian.herold@inin.com"
-    }, {
-      "name": "Michael McAuley",
-      "email": "mike.mcauley@inin.com",
-    }, {
-      "name": "Trezy",
-      "email": "tre@trezy.com",
-      "url": "http://trezy.com"
-    }
+    "Brian Herold <brian.herold@inin.com>",
+    "Michael McAuley <mike.mcauley@inin.com>",
+    "Trezy <tre@trezy.com> (http://trezy.com)"
   ],
   "license": "ISC",
   "bugs": {
