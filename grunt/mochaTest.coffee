@@ -9,5 +9,5 @@ module.exports = ( grunt, options ) ->
       reporter: 'html-cov'
       quiet: true
       require: 'coffee-script/register'
-      captureFile: 'test/coverage.html'
+      captureFile: 'doc/coverage.html'
     src: ['test/**/*.coffee']
