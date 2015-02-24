@@ -6,7 +6,7 @@
     "Interactive Intelligence"
   ],
   "description": "A grid library to present tabular data",
-  "main": "dist/huxtable.min.js",
+  "main": [".cdd/huxtable.css", "dist/huxtable.min.js"],
   "moduleType": [
     "globals"
   ],
