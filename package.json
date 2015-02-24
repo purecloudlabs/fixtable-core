@@ -1,0 +1,24 @@
+{
+  "name": "Fixie",
+  "version": "1.0.0",
+  "description": "A grid library to present tabular data",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MyPureCloud/Fixie.git"
+  },
+  "keywords": [
+    "Grid",
+    "Table",
+    "Data"
+  ],
+  "author": "Interactive Intelligence",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MyPureCloud/Fixie/issues"
+  },
+  "homepage": "https://github.com/MyPureCloud/Fixie"
+}
