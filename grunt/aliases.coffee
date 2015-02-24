@@ -1,2 +1,21 @@
 module.exports =
-  default: []
+  default: [
+    'dist'
+  ]
+
+  dist: [
+    'clean'
+    'buildCSS'
+    'buildJS'
+  ]
+
+  buildCSS: [
+    'sass'
+    'autoprefixer'
+    'cssmin'
+  ]
+
+  buildJS: [
+    'coffee'
+    'uglify'
+  ]
