@@ -31,24 +31,36 @@ Fixtable = (function() {
     });
   };
 
-  Fixtable.prototype._copyHeaderStyles = function() {
-    var headers, newHeaders;
-    if (this._headerStylesCopied) {
+  Fixtable.prototype._circulateStyles = function() {
+    var computedTableStyles, headers, newHeaders, theTable;
+    if (this._stylesCirculated) {
       return;
     }
-    this._headerStylesCopied = true;
+    this._stylesCirculated = true;
     headers = this.headers.find('th');
     newHeaders = this.headers.find('th > div');
-    return headers.each(function(index, header) {
+    headers.each(function(index, header) {
       var computedHeaderStyles, newHeader, theHeader;
       theHeader = headers[index];
       newHeader = newHeaders[index];
       computedHeaderStyles = window.getComputedStyle(theHeader);
       newHeader.style.padding = computedHeaderStyles.padding;
       newHeader.style.margin = computedHeaderStyles.margin;
+      newHeader.style.border = computedHeaderStyles.border;
       theHeader.style.padding = '0';
-      return theHeader.style.margin = '0';
+      theHeader.style.margin = '0';
+      return theHeader.style.border = 'none';
     });
+    theTable = this.el.find('table').get(0);
+    computedTableStyles = window.getComputedStyle(theTable);
+    this.el.css({
+      padding: computedTableStyles.padding,
+      margin: computedTableStyles.margin,
+      border: computedTableStyles.border
+    });
+    theTable.style.padding = '0';
+    theTable.style.margin = '0';
+    return theTable.style.border = 'none';
   };
 
   Fixtable.prototype._setHeaderHeight = function() {

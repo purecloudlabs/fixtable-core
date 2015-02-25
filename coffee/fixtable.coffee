@@ -25,9 +25,9 @@ class Fixtable
       'min-width': columnWidth
       'width': columnWidth
 
-  _copyHeaderStyles: ->
-    if @_headerStylesCopied then return
-    @_headerStylesCopied = true
+  _circulateStyles: ->
+    if @_stylesCirculated then return
+    @_stylesCirculated = true
 
     headers = @headers.find 'th'
     newHeaders = @headers.find 'th > div'
@@ -36,13 +36,27 @@ class Fixtable
       newHeader = newHeaders[index]
       computedHeaderStyles = window.getComputedStyle(theHeader)
 
-      # propogate header styles to fixtable headers
+      # propagate header styles to fixtable headers
       newHeader.style.padding = computedHeaderStyles.padding
       newHeader.style.margin = computedHeaderStyles.margin
+      newHeader.style.border = computedHeaderStyles.border
 
       # reset original header styles
       theHeader.style.padding = '0'
       theHeader.style.margin = '0'
+      theHeader.style.border = 'none'
+
+    theTable = @el.find('table').get(0)
+    computedTableStyles = window.getComputedStyle(theTable)
+    @el.css 
+      padding: computedTableStyles.padding
+      margin: computedTableStyles.margin
+      border: computedTableStyles.border
+
+    theTable.style.padding = '0'
+    theTable.style.margin = '0'
+    theTable.style.border = 'none'
+
 
   _setHeaderHeight: ->
 
