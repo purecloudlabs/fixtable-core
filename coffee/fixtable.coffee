@@ -1,4 +1,5 @@
 class Fixtable
+
   _bindElements: (el) ->
     if typeof el is 'string'
       @el = $ el
@@ -23,19 +24,29 @@ class Fixtable
 
     columnWidth = parseInt(columnWidth) + 'px'
 
-    @_copyHeaderStyle(header)
-
     header.css
       'max-width': columnWidth
       'min-width': columnWidth
       'width': columnWidth
-      'padding': 0
-      'margin': 0
 
-  _copyHeaderStyle: (header) ->
-    header.find('div').css
-      padding: header.css('padding')
-      margin: header.css('margin')
+  _copyHeaderStyles: ->
+    if @_headerStylesCopied then return
+    @_headerStylesCopied = true
+
+    headers = @headers.find 'th'
+    newHeaders = @headers.find 'th > div'
+    headers.each (index, header) ->
+      theHeader = headers[index]
+      newHeader = newHeaders[index]
+      computedHeaderStyles = window.getComputedStyle(theHeader)
+
+      # propogate header styles to fixtable headers
+      newHeader.style.padding = computedHeaderStyles.padding
+      newHeader.style.margin = computedHeaderStyles.margin
+
+      # reset original header styles
+      theHeader.style.padding = '0'
+      theHeader.style.margin = '0'
 
   _setHeaderHeight: ->
     headerHeight = @_getHeaderHeight() + 'px'

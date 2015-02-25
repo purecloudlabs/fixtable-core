@@ -28,20 +28,30 @@ Fixtable = (function() {
       header = this.headers.find(column);
     }
     columnWidth = parseInt(columnWidth) + 'px';
-    this._copyHeaderStyle(header);
     return header.css({
       'max-width': columnWidth,
       'min-width': columnWidth,
-      'width': columnWidth,
-      'padding': 0,
-      'margin': 0
+      'width': columnWidth
     });
   };
 
-  Fixtable.prototype._copyHeaderStyle = function(header) {
-    return header.find('div').css({
-      padding: header.css('padding'),
-      margin: header.css('margin')
+  Fixtable.prototype._copyHeaderStyles = function() {
+    var headers, newHeaders;
+    if (this._headerStylesCopied) {
+      return;
+    }
+    this._headerStylesCopied = true;
+    headers = this.headers.find('th');
+    newHeaders = this.headers.find('th > div');
+    return headers.each(function(index, header) {
+      var computedHeaderStyles, newHeader, theHeader;
+      theHeader = headers[index];
+      newHeader = newHeaders[index];
+      computedHeaderStyles = window.getComputedStyle(theHeader);
+      newHeader.style.padding = computedHeaderStyles.padding;
+      newHeader.style.margin = computedHeaderStyles.margin;
+      theHeader.style.padding = '0';
+      return theHeader.style.margin = '0';
     });
   };
 
