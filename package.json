@@ -42,6 +42,7 @@
     "grunt-mocha-test": "^0.12.7",
     "grunt-notify": "^0.4.1",
     "gulp": "^3.8.11",
+    "gulp-autoprefixer": "^2.1.0",
     "gulp-coffee": "^2.3.1",
     "gulp-copy": "0.0.2",
     "gulp-css-condense": "^1.1.2",
