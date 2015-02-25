@@ -11,7 +11,9 @@ Fixtable = (function() {
   };
 
   Fixtable.prototype._getHeaderHeight = function() {
-    return this.headers.find('div').outerHeight();
+    return Math.max.apply(null, this.headers.find('div').map(function(i, div) {
+      return $(div).outerHeight();
+    }));
   };
 
   Fixtable.prototype._setColumnWidth = function(column, columnWidth) {
@@ -64,10 +66,10 @@ Fixtable = (function() {
   };
 
   Fixtable.prototype._setHeaderHeight = function() {
-    var headerHeight, i, len, ref, th;
+    var headerHeight, j, len, ref, th;
     ref = this.headers.find('th');
-    for (i = 0, len = ref.length; i < len; i++) {
-      th = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      th = ref[j];
       th = $(th);
       th.find('div').css({
         'width': th.outerWidth()

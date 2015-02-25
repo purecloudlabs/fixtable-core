@@ -8,7 +8,7 @@ class Fixtable
     console.log 'foo'
 
   _getHeaderHeight: ->
-    return @headers.find('div').outerHeight()
+    Math.max.apply null, @headers.find('div').map (i, div) -> $(div).outerHeight()
 
   _setColumnWidth: (column, columnWidth) ->
     if typeof column is 'number'
