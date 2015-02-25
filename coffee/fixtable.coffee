@@ -1,4 +1,4 @@
-class Fixie
+class Fixtable
   _bindElements: (el) ->
     if typeof el is 'string'
       @el = $ el
