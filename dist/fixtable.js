@@ -28,7 +28,7 @@ Fixtable = (function() {
       header = this.headers.find(column);
     }
     columnWidth = parseInt(columnWidth) + 'px';
-    this._copyHeaderStyle();
+    this._copyHeaderStyle(header);
     return header.css({
       'max-width': columnWidth,
       'min-width': columnWidth,
