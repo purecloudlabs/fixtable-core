@@ -36,7 +36,10 @@ Fixtable = (function() {
   };
 
   Fixtable.prototype._setHeaderHeight = function() {
-    return this.el.css('padding-top', this._getHeaderHeight() + 'px');
+    var headerHeight;
+    headerHeight = this._getHeaderHeight() + 'px';
+    this.el.css('padding-top', headerHeight);
+    return this.el.find('.fixtable-header').css('height', headerHeight);
   };
 
   function Fixtable(el) {
