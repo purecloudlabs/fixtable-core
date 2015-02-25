@@ -1,11 +1,7 @@
 class Fixtable
 
   _bindElements: (el) ->
-    if typeof el is 'string'
-      @el = $ el
-    else
-      @el = el
-
+    @el = $ el
     @headers = @el.find 'thead'
 
   _bindEvents: ->
@@ -49,10 +45,15 @@ class Fixtable
       theHeader.style.margin = '0'
 
   _setHeaderHeight: ->
+
+    for th in @headers.find 'th'
+      th = $ th
+      th.find('div').css
+        'width': th.outerWidth()
+
     headerHeight = @_getHeaderHeight() + 'px'
     @el.css 'padding-top', headerHeight
     @el.find('.fixtable-header').css 'height', headerHeight
 
   constructor: (el) ->
     @_bindElements el
-    @_setHeaderHeight()

@@ -2,11 +2,7 @@ var Fixtable;
 
 Fixtable = (function() {
   Fixtable.prototype._bindElements = function(el) {
-    if (typeof el === 'string') {
-      this.el = $(el);
-    } else {
-      this.el = el;
-    }
+    this.el = $(el);
     return this.headers = this.el.find('thead');
   };
 
@@ -56,7 +52,15 @@ Fixtable = (function() {
   };
 
   Fixtable.prototype._setHeaderHeight = function() {
-    var headerHeight;
+    var headerHeight, i, len, ref, th;
+    ref = this.headers.find('th');
+    for (i = 0, len = ref.length; i < len; i++) {
+      th = ref[i];
+      th = $(th);
+      th.find('div').css({
+        'width': th.outerWidth()
+      });
+    }
     headerHeight = this._getHeaderHeight() + 'px';
     this.el.css('padding-top', headerHeight);
     return this.el.find('.fixtable-header').css('height', headerHeight);
@@ -64,7 +68,6 @@ Fixtable = (function() {
 
   function Fixtable(el) {
     this._bindElements(el);
-    this._setHeaderHeight();
   }
 
   return Fixtable;
