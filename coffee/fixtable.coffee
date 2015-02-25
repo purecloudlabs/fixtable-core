@@ -19,10 +19,19 @@ class Fixtable
 
     columnWidth = parseInt(columnWidth) + 'px'
 
+    @_copyHeaderStyle(header)
+
     header.css
       'max-width': columnWidth
       'min-width': columnWidth
       'width': columnWidth
+      'padding': 0
+      'margin': 0
+
+  _copyHeaderStyle: (header) ->
+    header.find('div').css
+      padding: header.css('padding')
+      margin: header.css('margin')
 
   _setHeaderHeight: ->
 
