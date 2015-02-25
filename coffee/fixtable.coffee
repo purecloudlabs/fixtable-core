@@ -71,3 +71,7 @@ class Fixtable
 
   constructor: (el) ->
     @_bindElements el
+    timeout = null
+    window.addEventListener 'resize', =>
+      clearTimeout timeout
+      timeout = setTimeout @_setHeaderHeight.bind(@), 100

@@ -81,7 +81,15 @@ Fixtable = (function() {
   };
 
   function Fixtable(el) {
+    var timeout;
     this._bindElements(el);
+    timeout = null;
+    window.addEventListener('resize', (function(_this) {
+      return function() {
+        clearTimeout(timeout);
+        return timeout = setTimeout(_this._setHeaderHeight.bind(_this), 100);
+      };
+    })(this));
   }
 
   return Fixtable;
