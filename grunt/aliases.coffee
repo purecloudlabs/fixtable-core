@@ -54,7 +54,7 @@ module.exports =
     'cssmin'
   ]
 
-  distJSS: [
+  distJS: [
     'buildJS'
     'uglify'
   ]

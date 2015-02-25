@@ -2,6 +2,7 @@ module.exports = ( grunt, options ) ->
   options:
     sourceMap: true
     extDot: 'last'
+    bare: true
 
   fixtable:
     files:
