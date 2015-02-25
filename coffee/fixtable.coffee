@@ -29,7 +29,9 @@ class Fixtable
       'width': columnWidth
 
   _setHeaderHeight: ->
-    @el.css 'padding-top', @_getHeaderHeight() + 'px'
+    headerHeight = @_getHeaderHeight() + 'px'
+    @el.css 'padding-top', headerHeight
+    @el.find('.fixtable-header').css 'height', headerHeight
 
   constructor: (el) ->
     @_bindElements el
