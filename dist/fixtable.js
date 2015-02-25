@@ -28,10 +28,20 @@ Fixtable = (function() {
       header = this.headers.find(column);
     }
     columnWidth = parseInt(columnWidth) + 'px';
+    this._copyHeaderStyle();
     return header.css({
       'max-width': columnWidth,
       'min-width': columnWidth,
-      'width': columnWidth
+      'width': columnWidth,
+      'padding': 0,
+      'margin': 0
+    });
+  };
+
+  Fixtable.prototype._copyHeaderStyle = function(header) {
+    return header.find('div').css({
+      padding: header.css('padding'),
+      margin: header.css('margin')
     });
   };
 
