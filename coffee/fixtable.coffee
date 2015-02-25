@@ -33,8 +33,6 @@ class Fixtable
       'margin': 0
 
   _copyHeaderStyle: (header) ->
-    # headerStyles = window.getComputedStyle(header.get(0),null).cssText 
-
     header.find('div').css
       padding: header.css('padding')
       margin: header.css('margin')
@@ -43,10 +41,6 @@ class Fixtable
     headerHeight = @_getHeaderHeight() + 'px'
     @el.css 'padding-top', headerHeight
     @el.find('.fixtable-header').css 'height', headerHeight
-
-    header
-    @headers.find('th:first').css('padding')
-
 
   constructor: (el) ->
     @_bindElements el
