@@ -23,7 +23,7 @@ class Fixtable
 
     columnWidth = parseInt(columnWidth) + 'px'
 
-    @_copyHeaderStyle()
+    @_copyHeaderStyle(header)
 
     header.css
       'max-width': columnWidth
