@@ -69,6 +69,11 @@ class Fixtable
     @el.css 'padding-top', headerHeight
     @el.find('.fixtable-header').css 'height', headerHeight
 
+  _setFooterHeight: ->
+    footer = @el.find '.fixtable-footer'
+    footerHeight = footer.css 'height'
+    @el.css 'padding-bottom', footerHeight
+
   constructor: (el) ->
     @_bindElements el
     timeout = null
