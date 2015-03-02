@@ -80,6 +80,13 @@ Fixtable = (function() {
     return this.el.find('.fixtable-header').css('height', headerHeight);
   };
 
+  Fixtable.prototype._setFooterHeight = function() {
+    var footer, footerHeight;
+    footer = this.el.find('.fixtable-footer');
+    footerHeight = footer.css('height');
+    return this.el.css('padding-bottom', footerHeight);
+  };
+
   function Fixtable(el) {
     var timeout;
     this._bindElements(el);
