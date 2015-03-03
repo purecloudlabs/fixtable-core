@@ -18,11 +18,10 @@ class Fixtable
     else
       header = @headers.find column
 
-    columnWidth = parseInt(columnWidth) + 'px'
+    if typeof columnWidth is 'number'
+      columnWidth = parseInt(columnWidth) + 'px'
 
     header.css
-      'max-width': columnWidth
-      'min-width': columnWidth
       'width': columnWidth
 
   _circulateStyles: ->

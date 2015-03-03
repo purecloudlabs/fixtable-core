@@ -25,10 +25,10 @@ Fixtable = (function() {
     } else {
       header = this.headers.find(column);
     }
-    columnWidth = parseInt(columnWidth) + 'px';
+    if (typeof columnWidth === 'number') {
+      columnWidth = parseInt(columnWidth) + 'px';
+    }
     return header.css({
-      'max-width': columnWidth,
-      'min-width': columnWidth,
       'width': columnWidth
     });
   };
