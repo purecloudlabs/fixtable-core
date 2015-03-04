@@ -39,6 +39,7 @@ Fixtable = (function() {
       return;
     }
     this._stylesCirculated = true;
+    this.el.addClass('fixtable-styles-circulated');
     headers = this.headers.find('th');
     newHeaders = this.headers.find('th > div');
     headers.each(function(index, header) {

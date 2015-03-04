@@ -27,6 +27,7 @@ class Fixtable
   _circulateStyles: ->
     if @_stylesCirculated then return
     @_stylesCirculated = true
+    @el.addClass 'fixtable-styles-circulated'
 
     headers = @headers.find 'th'
     newHeaders = @headers.find 'th > div'
