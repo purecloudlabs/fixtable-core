@@ -25,10 +25,10 @@ Fixtable = (function() {
     } else {
       header = this.headers.find(column);
     }
-    columnWidth = parseInt(columnWidth) + 'px';
+    if (typeof columnWidth === 'number') {
+      columnWidth = parseInt(columnWidth) + 'px';
+    }
     return header.css({
-      'max-width': columnWidth,
-      'min-width': columnWidth,
       'width': columnWidth
     });
   };
@@ -39,6 +39,7 @@ Fixtable = (function() {
       return;
     }
     this._stylesCirculated = true;
+    this.el.addClass('fixtable-styles-circulated');
     headers = this.headers.find('th');
     newHeaders = this.headers.find('th > div');
     headers.each(function(index, header) {
@@ -80,8 +81,23 @@ Fixtable = (function() {
     return this.el.find('.fixtable-header').css('height', headerHeight);
   };
 
+  Fixtable.prototype._setFooterHeight = function() {
+    var footer, footerHeight;
+    footer = this.el.find('.fixtable-footer');
+    footerHeight = footer.css('height');
+    return this.el.css('padding-bottom', footerHeight);
+  };
+
   function Fixtable(el) {
+    var timeout;
     this._bindElements(el);
+    timeout = null;
+    window.addEventListener('resize', (function(_this) {
+      return function() {
+        clearTimeout(timeout);
+        return timeout = setTimeout(_this._setHeaderHeight.bind(_this), 100);
+      };
+    })(this));
   }
 
   return Fixtable;

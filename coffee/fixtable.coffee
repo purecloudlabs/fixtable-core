@@ -18,16 +18,16 @@ class Fixtable
     else
       header = @headers.find column
 
-    columnWidth = parseInt(columnWidth) + 'px'
+    if typeof columnWidth is 'number'
+      columnWidth = parseInt(columnWidth) + 'px'
 
     header.css
-      'max-width': columnWidth
-      'min-width': columnWidth
       'width': columnWidth
 
   _circulateStyles: ->
     if @_stylesCirculated then return
     @_stylesCirculated = true
+    @el.addClass 'fixtable-styles-circulated'
 
     headers = @headers.find 'th'
     newHeaders = @headers.find 'th > div'
@@ -69,5 +69,14 @@ class Fixtable
     @el.css 'padding-top', headerHeight
     @el.find('.fixtable-header').css 'height', headerHeight
 
+  _setFooterHeight: ->
+    footer = @el.find '.fixtable-footer'
+    footerHeight = footer.css 'height'
+    @el.css 'padding-bottom', footerHeight
+
   constructor: (el) ->
     @_bindElements el
+    timeout = null
+    window.addEventListener 'resize', =>
+      clearTimeout timeout
+      timeout = setTimeout @_setHeaderHeight.bind(@), 100

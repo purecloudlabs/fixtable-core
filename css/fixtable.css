@@ -1,6 +1,7 @@
 .fixtable {
   margin: 0 auto;
   position: relative;
+  height: 100%;
 }
 
 .fixtable * {
@@ -15,7 +16,6 @@
 .fixtable table {
   border: none;
   border-collapse: collapse;
-  height: 100%;
   table-layout: fixed;
   width: 100%;
 }
@@ -35,5 +35,23 @@
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+}
+
+.fixtable-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.fixtable .loading-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.fixtable-cell-editing input {
   width: 100%;
 }
