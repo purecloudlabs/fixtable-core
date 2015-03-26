@@ -73,6 +73,7 @@ class Fixtable
     headerCell = @tableHeader.querySelectorAll(selector)[0]
     if typeof width is 'number' then width = parseInt(width) + 'px'
     headerCell.style.width = width
+    @table.style.tableLayout = 'fixed'
 
   setDimensions: ->
     @_setColumnHeaderWidths()

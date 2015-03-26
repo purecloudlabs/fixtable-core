@@ -94,7 +94,8 @@ Fixtable = (function() {
     if (typeof width === 'number') {
       width = parseInt(width) + 'px';
     }
-    return headerCell.style.width = width;
+    headerCell.style.width = width;
+    return this.table.style.tableLayout = 'fixed';
   };
 
   Fixtable.prototype.setDimensions = function() {
