@@ -1,82 +1,80 @@
 class Fixtable
 
-  _bindElements: (el) ->
-    @el = $ el
-    @headers = @el.find 'thead'
+  _bindElements: (element) ->
+    @fixtable = element
+    @table = @fixtable.querySelectorAll('table')[0]
+    @tableHeader = @table.querySelectorAll('thead')[0]
+    @fixtableHeader = @fixtable.querySelectorAll('.fixtable-header')[0]
+    @fixtableFooter = @fixtable.querySelectorAll('.fixtable-footer')[0]
 
   _bindEvents: ->
-    console.log 'foo'
 
-  _getHeaderHeight: ->
-    Math.max.apply null, @headers.find('div').map (i, div) -> $(div).outerHeight()
+    # re-set dimensions on window resize (with 100ms debounce to throttle)
+    resizeDebounce = null
+    window.addEventListener 'resize', =>
+      clearTimeout resizeDebounce
+      resizeDebounce = setTimeout @setDimensions.bind(@), 100
 
-  _setColumnWidth: (column, columnWidth) ->
-    if typeof column is 'number'
-      header = @headers.find 'th:nth-of-type(' + column + ')'
-    else if typeof column is 'object'
-      header = column
-    else
-      header = @headers.find column
+  _moveStyles: (from, to) ->
+    styles = [
+      'margin'
+      'padding'
+      'borderTop'
+      'borderRight'
+      'borderBottom'
+      'borderLeft'
+    ]
+    computed = window.getComputedStyle from
+    for style in styles
+      to.style[style] = computed[style]
+      from.style[style] = '0'
 
-    if typeof columnWidth is 'number'
-      columnWidth = parseInt(columnWidth) + 'px'
+  _getColumnHeaderMaxHeight: ->
+    divs = [].slice.call @tableHeader.querySelectorAll 'th > div'
+    Math.max.apply null, divs.map (div) -> div.offsetHeight
 
-    header.css
-      'width': columnWidth
+  _setColumnHeaderWidths: ->
+    divs = @tableHeader.querySelectorAll 'th > div'
+    for div in divs
+      div.style.width = div.parentNode.offsetWidth + 'px'
 
-  _circulateStyles: ->
-    if @_stylesCirculated then return
-    @_stylesCirculated = true
-    @el.addClass 'fixtable-styles-circulated'
-
-    headers = @headers.find 'th'
-    newHeaders = @headers.find 'th > div'
-    headers.each (index, header) ->
-      theHeader = headers[index]
-      newHeader = newHeaders[index]
-      computedHeaderStyles = window.getComputedStyle(theHeader)
-
-      # propagate header styles to fixtable headers
-      newHeader.style.padding = computedHeaderStyles.padding
-      newHeader.style.margin = computedHeaderStyles.margin
-      newHeader.style.border = computedHeaderStyles.border
-
-      # reset original header styles
-      theHeader.style.padding = '0'
-      theHeader.style.margin = '0'
-      theHeader.style.border = 'none'
-
-    theTable = @el.find('table').get(0)
-    computedTableStyles = window.getComputedStyle(theTable)
-    @el.css 
-      padding: computedTableStyles.padding
-      margin: computedTableStyles.margin
-      border: computedTableStyles.border
-
-    theTable.style.padding = '0'
-    theTable.style.margin = '0'
-    theTable.style.border = 'none'
-
+  _setFixtablePadding: ->
+    @fixtable.style.paddingTop = @fixtableHeader.style.height
+    if @fixtableFooter
+      @fixtable.style.paddingBottom = @fixtableFooter.style.height
 
   _setHeaderHeight: ->
+    headerHeight = @_getColumnHeaderMaxHeight() + 'px'
+    @fixtableHeader.style.height = headerHeight
 
-    for th in @headers.find 'th'
-      th = $ th
-      th.find('div').css
-        'width': th.outerWidth()
 
-    headerHeight = @_getHeaderHeight() + 'px'
-    @el.css 'padding-top', headerHeight
-    @el.find('.fixtable-header').css 'height', headerHeight
+  constructor: (element) ->
+    @_bindElements element
+    @_bindEvents()
 
-  _setFooterHeight: ->
-    footer = @el.find '.fixtable-footer'
-    footerHeight = footer.css 'height'
-    @el.css 'padding-bottom', footerHeight
+  # move styles from <table> and <th> elements to their fixtable equivalents
+  moveTableStyles: ->
 
-  constructor: (el) ->
-    @_bindElements el
-    timeout = null
-    window.addEventListener 'resize', =>
-      clearTimeout timeout
-      timeout = setTimeout @_setHeaderHeight.bind(@), 100
+    # only do this once
+    return if @_stylesCirculated
+    @fixtable.className += 'fixtable-styles-circulated'
+    @_stylesCirculated = true
+
+    # move styles from table to .fixtable
+    @_moveStyles @table, @fixtable
+
+    # move styles from header cells to child divs
+    divs = @tableHeader.querySelectorAll 'th > div'
+    for div in divs
+      @_moveStyles div.parentNode, div
+
+  setColumnWidth: (column, width) ->
+    selector = 'th:nth-of-type(' + column + ')'
+    headerCell = @tableHeader.querySelectorAll(selector)[0]
+    if typeof width is 'number' then width = parseInt(width) + 'px'
+    headerCell.style.width = width
+
+  setDimensions: ->
+    @_setColumnHeaderWidths()
+    @_setHeaderHeight()
+    @_setFixtablePadding()
