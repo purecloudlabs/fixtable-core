@@ -16,16 +16,30 @@ class Fixtable
 
   _moveStyles: (from, to) ->
     styles = [
-      'margin'
-      'padding'
-      'borderTop'
-      'borderRight'
-      'borderBottom'
-      'borderLeft'
+      'margin-top'
+      'margin-right'
+      'margin-bottom'
+      'margin-left'
+      'padding-top'
+      'padding-right'
+      'padding-bottom'
+      'padding-left'
+      'border-top-color'
+      'border-top-style'
+      'border-top-width'
+      'border-right-color'
+      'border-right-style'
+      'border-right-width'
+      'border-bottom-color'
+      'border-bottom-style'
+      'border-bottom-width'
+      'border-left-color'
+      'border-left-style'
+      'border-left-width'
     ]
     computed = window.getComputedStyle from
     for style in styles
-      to.style[style] = computed[style]
+      to.style[style] = computed.getPropertyValue style
       from.style[style] = '0'
 
   _getColumnHeaderMaxHeight: ->

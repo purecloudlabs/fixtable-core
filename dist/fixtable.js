@@ -21,12 +21,12 @@ Fixtable = (function() {
 
   Fixtable.prototype._moveStyles = function(from, to) {
     var computed, i, len, results, style, styles;
-    styles = ['margin', 'padding', 'borderTop', 'borderRight', 'borderBottom', 'borderLeft'];
+    styles = ['margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'border-top-color', 'border-top-style', 'border-top-width', 'border-right-color', 'border-right-style', 'border-right-width', 'border-bottom-color', 'border-bottom-style', 'border-bottom-width', 'border-left-color', 'border-left-style', 'border-left-width'];
     computed = window.getComputedStyle(from);
     results = [];
     for (i = 0, len = styles.length; i < len; i++) {
       style = styles[i];
-      to.style[style] = computed[style];
+      to.style[style] = computed.getPropertyValue(style);
       results.push(from.style[style] = '0');
     }
     return results;
