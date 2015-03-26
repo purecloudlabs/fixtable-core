@@ -5,8 +5,7 @@ Fixtable = (function() {
     this.fixtable = element;
     this.table = this.fixtable.querySelectorAll('table')[0];
     this.tableHeader = this.table.querySelectorAll('thead')[0];
-    this.fixtableHeader = this.fixtable.querySelectorAll('.fixtable-header')[0];
-    return this.fixtableFooter = this.fixtable.querySelectorAll('.fixtable-footer')[0];
+    return this.fixtableHeader = this.fixtable.querySelectorAll('.fixtable-header')[0];
   };
 
   Fixtable.prototype._bindEvents = function() {
@@ -53,9 +52,10 @@ Fixtable = (function() {
   };
 
   Fixtable.prototype._setFixtablePadding = function() {
+    var fixtableFooter;
     this.fixtable.style.paddingTop = this.fixtableHeader.style.height;
-    if (this.fixtableFooter) {
-      return this.fixtable.style.paddingBottom = this.fixtableFooter.style.height;
+    if (fixtableFooter = this.fixtable.querySelectorAll('.fixtable-footer')[0]) {
+      return this.fixtable.style.paddingBottom = fixtableFooter.offsetHeight + 'px';
     }
   };
 

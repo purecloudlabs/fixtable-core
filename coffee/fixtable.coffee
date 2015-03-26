@@ -5,7 +5,6 @@ class Fixtable
     @table = @fixtable.querySelectorAll('table')[0]
     @tableHeader = @table.querySelectorAll('thead')[0]
     @fixtableHeader = @fixtable.querySelectorAll('.fixtable-header')[0]
-    @fixtableFooter = @fixtable.querySelectorAll('.fixtable-footer')[0]
 
   _bindEvents: ->
 
@@ -40,8 +39,8 @@ class Fixtable
 
   _setFixtablePadding: ->
     @fixtable.style.paddingTop = @fixtableHeader.style.height
-    if @fixtableFooter
-      @fixtable.style.paddingBottom = @fixtableFooter.style.height
+    if fixtableFooter = @fixtable.querySelectorAll('.fixtable-footer')[0]
+      @fixtable.style.paddingBottom = fixtableFooter.offsetHeight + 'px'
 
   _setHeaderHeight: ->
     headerHeight = @_getColumnHeaderMaxHeight() + 'px'
