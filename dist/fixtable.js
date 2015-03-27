@@ -5,7 +5,8 @@ Fixtable = (function() {
     this.fixtable = element;
     this.table = this.fixtable.querySelectorAll('table')[0];
     this.tableHeader = this.table.querySelectorAll('thead')[0];
-    return this.fixtableHeader = this.fixtable.querySelectorAll('.fixtable-header')[0];
+    this.fixtableHeader = this.fixtable.querySelectorAll('.fixtable-header')[0];
+    return this.fixtableFilters = this.fixtable.querySelectorAll('.fixtable-filters')[0];
   };
 
   Fixtable.prototype._bindEvents = function() {
@@ -33,16 +34,39 @@ Fixtable = (function() {
   };
 
   Fixtable.prototype._getColumnHeaderMaxHeight = function() {
-    var divs;
-    divs = [].slice.call(this.tableHeader.querySelectorAll('th > div'));
+    var divs, selector;
+    selector = 'tr.fixtable-column-headers th > div';
+    divs = [].slice.call(this.tableHeader.querySelectorAll(selector));
+    return Math.max.apply(null, divs.map(function(div) {
+      return div.offsetHeight;
+    }));
+  };
+
+  Fixtable.prototype._getColumnFilterMaxHeight = function() {
+    var divs, selector;
+    selector = 'tr.fixtable-column-filters th > div';
+    divs = [].slice.call(this.tableHeader.querySelectorAll(selector));
     return Math.max.apply(null, divs.map(function(div) {
       return div.offsetHeight;
     }));
   };
 
   Fixtable.prototype._setColumnHeaderWidths = function() {
-    var div, divs, i, len, results;
-    divs = this.tableHeader.querySelectorAll('th > div');
+    var div, divs, i, len, results, selector;
+    selector = 'tr.fixtable-column-headers th > div';
+    divs = this.tableHeader.querySelectorAll(selector);
+    results = [];
+    for (i = 0, len = divs.length; i < len; i++) {
+      div = divs[i];
+      results.push(div.style.width = div.parentNode.offsetWidth + 'px');
+    }
+    return results;
+  };
+
+  Fixtable.prototype._setColumnFilterWidths = function() {
+    var div, divs, i, len, results, selector;
+    selector = 'tr.fixtable-column-filters th > div';
+    divs = this.tableHeader.querySelectorAll(selector);
     results = [];
     for (i = 0, len = divs.length; i < len; i++) {
       div = divs[i];
@@ -52,8 +76,9 @@ Fixtable = (function() {
   };
 
   Fixtable.prototype._setFixtablePadding = function() {
-    var fixtableFooter;
-    this.fixtable.style.paddingTop = this.fixtableHeader.style.height;
+    var fixtableFooter, topPadding;
+    topPadding = this.fixtableHeader.offsetHeight + this.fixtableFilters.offsetHeight;
+    this.fixtable.style.paddingTop = topPadding + 'px';
     if (fixtableFooter = this.fixtable.querySelectorAll('.fixtable-footer')[0]) {
       return this.fixtable.style.paddingBottom = fixtableFooter.offsetHeight + 'px';
     }
@@ -65,24 +90,51 @@ Fixtable = (function() {
     return this.fixtableHeader.style.height = headerHeight;
   };
 
+  Fixtable.prototype._setFiltersHeight = function() {
+    var div, divs, filtersHeight, headerHeight, i, len, results, selector;
+    filtersHeight = this._getColumnFilterMaxHeight() + 'px';
+    headerHeight = this.fixtableHeader.style.height;
+    if (this.fixtableFilters) {
+      this.fixtableFilters.style.paddingTop = filtersHeight;
+      this.fixtableFilters.style.top = headerHeight;
+    }
+    selector = 'tr.fixtable-column-filters th > div';
+    divs = this.tableHeader.querySelectorAll(selector);
+    results = [];
+    for (i = 0, len = divs.length; i < len; i++) {
+      div = divs[i];
+      results.push(div.style.top = headerHeight);
+    }
+    return results;
+  };
+
   function Fixtable(element) {
     this._bindElements(element);
     this._bindEvents();
   }
 
   Fixtable.prototype.moveTableStyles = function() {
-    var div, divs, i, len, results;
+    var cell, div, divs, headerCells, i, j, len, len1, results, selector;
     if (this._stylesCirculated) {
       return;
     }
     this.fixtable.className += 'fixtable-styles-circulated';
     this._stylesCirculated = true;
     this._moveStyles(this.table, this.fixtable);
-    divs = this.tableHeader.querySelectorAll('th > div');
-    results = [];
+    selector = 'tr.fixtable-column-headers th > div';
+    divs = this.tableHeader.querySelectorAll(selector);
     for (i = 0, len = divs.length; i < len; i++) {
       div = divs[i];
-      results.push(this._moveStyles(div.parentNode, div));
+      this._moveStyles(div.parentNode, div);
+    }
+    selector = 'tr.fixtable-column-filters th';
+    headerCells = this.tableHeader.querySelectorAll(selector);
+    results = [];
+    for (j = 0, len1 = headerCells.length; j < len1; j++) {
+      cell = headerCells[j];
+      cell.style.margin = '0';
+      cell.style.padding = '0';
+      results.push(cell.style.border = '0');
     }
     return results;
   };
@@ -101,6 +153,8 @@ Fixtable = (function() {
   Fixtable.prototype.setDimensions = function() {
     this._setColumnHeaderWidths();
     this._setHeaderHeight();
+    this._setColumnFilterWidths();
+    this._setFiltersHeight();
     return this._setFixtablePadding();
   };
 

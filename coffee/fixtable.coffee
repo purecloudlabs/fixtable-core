@@ -5,6 +5,7 @@ class Fixtable
     @table = @fixtable.querySelectorAll('table')[0]
     @tableHeader = @table.querySelectorAll('thead')[0]
     @fixtableHeader = @fixtable.querySelectorAll('.fixtable-header')[0]
+    @fixtableFilters = @fixtable.querySelectorAll('.fixtable-filters')[0]
 
   _bindEvents: ->
 
@@ -43,22 +44,47 @@ class Fixtable
       from.style[style] = '0'
 
   _getColumnHeaderMaxHeight: ->
-    divs = [].slice.call @tableHeader.querySelectorAll 'th > div'
+    selector = 'tr.fixtable-column-headers th > div'
+    divs = [].slice.call @tableHeader.querySelectorAll selector
+    Math.max.apply null, divs.map (div) -> div.offsetHeight
+
+  _getColumnFilterMaxHeight: ->
+    selector = 'tr.fixtable-column-filters th > div'
+    divs = [].slice.call @tableHeader.querySelectorAll selector
     Math.max.apply null, divs.map (div) -> div.offsetHeight
 
   _setColumnHeaderWidths: ->
-    divs = @tableHeader.querySelectorAll 'th > div'
+    selector = 'tr.fixtable-column-headers th > div'
+    divs = @tableHeader.querySelectorAll selector
+    for div in divs
+      div.style.width = div.parentNode.offsetWidth + 'px'
+
+  _setColumnFilterWidths: ->
+    selector = 'tr.fixtable-column-filters th > div'
+    divs = @tableHeader.querySelectorAll selector
     for div in divs
       div.style.width = div.parentNode.offsetWidth + 'px'
 
   _setFixtablePadding: ->
-    @fixtable.style.paddingTop = @fixtableHeader.style.height
+    topPadding = @fixtableHeader.offsetHeight + @fixtableFilters.offsetHeight
+    @fixtable.style.paddingTop = topPadding + 'px'
     if fixtableFooter = @fixtable.querySelectorAll('.fixtable-footer')[0]
       @fixtable.style.paddingBottom = fixtableFooter.offsetHeight + 'px'
 
   _setHeaderHeight: ->
     headerHeight = @_getColumnHeaderMaxHeight() + 'px'
     @fixtableHeader.style.height = headerHeight
+
+  _setFiltersHeight: ->
+    filtersHeight = @_getColumnFilterMaxHeight() + 'px'
+    headerHeight = @fixtableHeader.style.height
+    if @fixtableFilters
+      @fixtableFilters.style.paddingTop = filtersHeight
+      @fixtableFilters.style.top = headerHeight
+    selector = 'tr.fixtable-column-filters th > div'
+    divs = @tableHeader.querySelectorAll selector
+    for div in divs
+      div.style.top = headerHeight
 
 
   constructor: (element) ->
@@ -77,9 +103,18 @@ class Fixtable
     @_moveStyles @table, @fixtable
 
     # move styles from header cells to child divs
-    divs = @tableHeader.querySelectorAll 'th > div'
+    selector = 'tr.fixtable-column-headers th > div'
+    divs = @tableHeader.querySelectorAll selector
     for div in divs
       @_moveStyles div.parentNode, div
+
+    # remove styles from filter <th> elements
+    selector = 'tr.fixtable-column-filters th'
+    headerCells = @tableHeader.querySelectorAll selector
+    for cell in headerCells
+      cell.style.margin = '0'
+      cell.style.padding = '0'
+      cell.style.border = '0'
 
   setColumnWidth: (column, width) ->
     selector = 'th:nth-of-type(' + column + ')'
@@ -91,4 +126,6 @@ class Fixtable
   setDimensions: ->
     @_setColumnHeaderWidths()
     @_setHeaderHeight()
+    @_setColumnFilterWidths()
+    @_setFiltersHeight()
     @_setFixtablePadding()

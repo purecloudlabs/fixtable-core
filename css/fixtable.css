@@ -36,6 +36,12 @@
   width: 100%;
 }
 
+.fixtable-filters {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+
 .fixtable-footer {
   position: absolute;
   bottom: 0;
