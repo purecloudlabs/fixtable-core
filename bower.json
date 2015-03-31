@@ -29,7 +29,7 @@
     "coffee",
     "css",
     "grunt",
-    "Gruntfile.coffee"
+    "Gruntfile.coffee",
     "package.json",
     "README.md"
   ]
