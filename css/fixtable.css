@@ -29,7 +29,7 @@
   top: 0;
 }
 
-.fixtable-column-filters input
+.fixtable-column-filters input,
 .fixtable-column-filters select {
   width: 100%;
 }
