@@ -5,6 +5,7 @@ class Fixtable
     @table = @fixtable.querySelectorAll('table')[0]
     @tableHeader = @table.querySelectorAll('thead')[0]
     @fixtableHeader = @fixtable.querySelectorAll('.fixtable-header')[0]
+    @fixtableInner = @fixtable.querySelectorAll('.fixtable-inner')[0]
     @fixtableFilters = @fixtable.querySelectorAll('.fixtable-filters')[0]
 
   _bindEvents: ->
@@ -115,6 +116,9 @@ class Fixtable
       cell.style.margin = '0'
       cell.style.padding = '0'
       cell.style.border = '0'
+
+  scrollTop: ->
+    @fixtableInner.scrollTop = 0
 
   setColumnWidth: (column, width) ->
     selector = 'th:nth-of-type(' + column + ')'
