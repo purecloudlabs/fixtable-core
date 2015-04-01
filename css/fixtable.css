@@ -1,7 +1,6 @@
 .fixtable {
   margin: 0 auto;
   position: relative;
-  z-index: 0; /* new stacking context */
   height: 100%;
 }
 
@@ -28,16 +27,6 @@
 .fixtable thead th > div {
   position: absolute;
   top: 0;
-}
-
-.fixtable-header,
-.fixtable-filters {
-  z-index: 100;
-}
-
-.fixtable-column-headers th > div,
-.fixtable-column-filters th > div {
-  z-index: 101;
 }
 
 .fixtable-column-filters input,
