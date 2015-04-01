@@ -6,6 +6,7 @@ Fixtable = (function() {
     this.table = this.fixtable.querySelectorAll('table')[0];
     this.tableHeader = this.table.querySelectorAll('thead')[0];
     this.fixtableHeader = this.fixtable.querySelectorAll('.fixtable-header')[0];
+    this.fixtableInner = this.fixtable.querySelectorAll('.fixtable-inner')[0];
     return this.fixtableFilters = this.fixtable.querySelectorAll('.fixtable-filters')[0];
   };
 
@@ -137,6 +138,10 @@ Fixtable = (function() {
       results.push(cell.style.border = '0');
     }
     return results;
+  };
+
+  Fixtable.prototype.scrollTop = function() {
+    return this.fixtableInner.scrollTop = 0;
   };
 
   Fixtable.prototype.setColumnWidth = function(column, width) {
