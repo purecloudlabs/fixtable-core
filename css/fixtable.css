@@ -65,3 +65,21 @@
 .fixtable-cell-editing input {
   width: 100%;
 }
+
+.fixtable-sortable-column-header {
+  cursor: pointer;
+}
+
+.fixtable-triangle {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1em;
+}
+
+.fixtable-triangle-reversed {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
