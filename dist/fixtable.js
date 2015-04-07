@@ -1,7 +1,7 @@
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set
-    define('fixtable', [], function () {
+    define([], function () {
       return (root['Fixtable'] = factory());
     });
   } else if (typeof exports === 'object') {
@@ -126,8 +126,14 @@ Fixtable = (function() {
   };
 
   function Fixtable(element) {
-    this._bindElements(element);
-    this._bindEvents();
+    var e;
+    try {
+      this._bindElements(element);
+      this._bindEvents();
+    } catch (_error) {
+      e = _error;
+      console.error('Fixtable requires an element to bind to, e.g. new Fixtable(\'.fixtable\')');
+    }
   }
 
   Fixtable.prototype.moveTableStyles = function() {

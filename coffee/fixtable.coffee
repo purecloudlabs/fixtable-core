@@ -89,8 +89,11 @@ class Fixtable
 
 
   constructor: (element) ->
-    @_bindElements element
-    @_bindEvents()
+    try
+      @_bindElements element
+      @_bindEvents()
+    catch e
+      console.error 'Fixtable requires an element to bind to, e.g. new Fixtable(\'.fixtable\')'
 
   # move styles from <table> and <th> elements to their fixtable equivalents
   moveTableStyles: ->
