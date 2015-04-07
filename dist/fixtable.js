@@ -2,7 +2,7 @@
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set
     define('fixtable', [], function () {
-      return (factory());
+      return (root['Fixtable'] = factory());
     });
   } else if (typeof exports === 'object') {
     // Node. Does not work with strict CommonJS, but
@@ -10,7 +10,7 @@
     // like Node.
     module.exports = factory();
   } else {
-    factory();
+    root['Fixtable'] = factory();
   }
 }(this, function () {
 
@@ -185,5 +185,6 @@ Fixtable = (function() {
 
 //# sourceMappingURL=fixtable.js.map
 
+return Fixtable;
 
 }));
