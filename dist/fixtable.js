@@ -1,7 +1,7 @@
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set
-    define([], function () {
+    define('fixtable', [], function () {
       return (root['Fixtable'] = factory());
     });
   } else if (typeof exports === 'object') {
@@ -141,7 +141,7 @@ Fixtable = (function() {
     if (this._stylesCirculated) {
       return;
     }
-    this.fixtable.className += 'fixtable-styles-circulated';
+    this.fixtable.className += ' fixtable-styles-circulated';
     this._stylesCirculated = true;
     this._moveStyles(this.table, this.fixtable);
     selector = 'tr.fixtable-column-headers th > div';
