@@ -100,7 +100,7 @@ class Fixtable
 
     # only do this once
     return if @_stylesCirculated
-    @fixtable.className += 'fixtable-styles-circulated'
+    @fixtable.className += ' fixtable-styles-circulated'
     @_stylesCirculated = true
 
     # move styles from table to .fixtable
