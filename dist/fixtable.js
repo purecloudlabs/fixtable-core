@@ -177,7 +177,20 @@ Fixtable = (function() {
     return this.table.style.tableLayout = 'fixed';
   };
 
-  Fixtable.prototype.setDimensions = function() {
+  Fixtable.prototype.setDimensions = function(attempts) {
+    if (attempts == null) {
+      attempts = 0;
+    }
+    if (++attempts === 10) {
+      return;
+    }
+    if (!this._getColumnHeaderMaxHeight()) {
+      return setTimeout((function(_this) {
+        return function() {
+          return _this.setDimensions(attempts);
+        };
+      })(this), 1);
+    }
     this._setColumnHeaderWidths();
     this._setHeaderHeight();
     this._setColumnFilterWidths();

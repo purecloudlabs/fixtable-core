@@ -130,7 +130,15 @@ class Fixtable
     headerCell.style.width = width
     @table.style.tableLayout = 'fixed'
 
-  setDimensions: ->
+  setDimensions: (attempts = 0) ->
+
+    # defer up to 10x until header divs have been rendered to dom
+    return if ++attempts is 10
+    unless @_getColumnHeaderMaxHeight()
+      return setTimeout =>
+        @setDimensions attempts
+      , 1
+
     @_setColumnHeaderWidths()
     @_setHeaderHeight()
     @_setColumnFilterWidths()
