@@ -1,6 +1,7 @@
 .fixtable {
   margin: 0 auto;
   position: relative;
+  height: 100%;
 }
 
 .fixtable * {
@@ -8,7 +9,6 @@
 }
 
 .fixtable-inner {
-  height: 100%;
   overflow: auto;
 }
 
