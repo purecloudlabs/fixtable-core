@@ -87,6 +87,12 @@ class Fixtable
     for div in divs
       div.style.top = headerHeight
 
+  # check whether at least one header div is rendered in the dom
+  _tableIsRendered: ->
+    selector = 'tr.fixtable-column-headers th > div'
+    headerDivs = @fixtable.querySelectorAll selector
+    headerDivs.length and headerDivs[0].offsetHeight
+
 
   constructor: (element) ->
     try
@@ -96,7 +102,14 @@ class Fixtable
       console.error 'Fixtable requires an element to bind to, e.g. new Fixtable(\'.fixtable\')'
 
   # move styles from <table> and <th> elements to their fixtable equivalents
-  moveTableStyles: ->
+  moveTableStyles: (attempts = 0) ->
+
+    # defer up to 10x until header divs have been rendered to dom
+    return if ++attempts is 10
+    unless @_tableIsRendered()
+      return setTimeout =>
+        @moveTableStyles attempts
+      , 0
 
     # only do this once
     return if @_stylesCirculated
@@ -123,7 +136,15 @@ class Fixtable
   scrollTop: ->
     @fixtableInner.scrollTop = 0
 
-  setColumnWidth: (column, width) ->
+  setColumnWidth: (column, width, attempts = 0) ->
+
+    # defer up to 10x until header divs have been rendered to dom
+    return if ++attempts is 10
+    unless @_tableIsRendered()
+      return setTimeout =>
+        @setColumnWidth column, width, attempts
+      , 1
+
     selector = 'th:nth-of-type(' + column + ')'
     headerCell = @tableHeader.querySelectorAll(selector)[0]
     if typeof width is 'number' then width = parseInt(width) + 'px'
@@ -132,9 +153,9 @@ class Fixtable
 
   setDimensions: (attempts = 0) ->
 
-    # defer up to 10x until header divs have been rendered to dom
+    # defer up to 10x until header divs have been rendered to dom & styles circulated
     return if ++attempts is 10
-    unless @_getColumnHeaderMaxHeight()
+    unless @_stylesCirculated and @_tableIsRendered()
       return setTimeout =>
         @setDimensions attempts
       , 1

@@ -125,6 +125,13 @@ Fixtable = (function() {
     return results;
   };
 
+  Fixtable.prototype._tableIsRendered = function() {
+    var headerDivs, selector;
+    selector = 'tr.fixtable-column-headers th > div';
+    headerDivs = this.fixtable.querySelectorAll(selector);
+    return headerDivs.length && headerDivs[0].offsetHeight;
+  };
+
   function Fixtable(element) {
     var e;
     try {
@@ -136,8 +143,21 @@ Fixtable = (function() {
     }
   }
 
-  Fixtable.prototype.moveTableStyles = function() {
+  Fixtable.prototype.moveTableStyles = function(attempts) {
     var cell, div, divs, headerCells, i, j, len, len1, results, selector;
+    if (attempts == null) {
+      attempts = 0;
+    }
+    if (++attempts === 10) {
+      return;
+    }
+    if (!this._tableIsRendered()) {
+      return setTimeout((function(_this) {
+        return function() {
+          return _this.moveTableStyles(attempts);
+        };
+      })(this), 0);
+    }
     if (this._stylesCirculated) {
       return;
     }
@@ -166,8 +186,21 @@ Fixtable = (function() {
     return this.fixtableInner.scrollTop = 0;
   };
 
-  Fixtable.prototype.setColumnWidth = function(column, width) {
+  Fixtable.prototype.setColumnWidth = function(column, width, attempts) {
     var headerCell, selector;
+    if (attempts == null) {
+      attempts = 0;
+    }
+    if (++attempts === 10) {
+      return;
+    }
+    if (!this._tableIsRendered()) {
+      return setTimeout((function(_this) {
+        return function() {
+          return _this.setColumnWidth(column, width, attempts);
+        };
+      })(this), 1);
+    }
     selector = 'th:nth-of-type(' + column + ')';
     headerCell = this.tableHeader.querySelectorAll(selector)[0];
     if (typeof width === 'number') {
@@ -184,7 +217,7 @@ Fixtable = (function() {
     if (++attempts === 10) {
       return;
     }
-    if (!this._getColumnHeaderMaxHeight()) {
+    if (!(this._stylesCirculated && this._tableIsRendered())) {
       return setTimeout((function(_this) {
         return function() {
           return _this.setDimensions(attempts);
