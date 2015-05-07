@@ -1,5 +1,7 @@
 class Fixtable
 
+  @_DEBUG = false
+
   _bindElements: (element) ->
     @fixtable = element
     @table = @fixtable.querySelectorAll('table')[0]
@@ -16,7 +18,14 @@ class Fixtable
       clearTimeout resizeDebounce
       resizeDebounce = setTimeout @setDimensions.bind(@), 100
 
+  _log: ->
+    unless @constructor._DEBUG then return
+    messages = Array::slice.call arguments
+    messages.unshift '[fixtable]'
+    console.log.apply console, messages
+
   _moveStyles: (from, to) ->
+    @_log 'moving styles from', from, 'to', to
     styles = [
       'margin-top'
       'margin-right'
@@ -93,6 +102,18 @@ class Fixtable
     headerDivs = @fixtable.querySelectorAll selector
     headerDivs.length and headerDivs[0].offsetHeight
 
+  # check whether all columns that attempted to set width were successful
+  _checkColumnWidthsSet: ->
+    for column, index in @_columnWidths
+      unless column then continue
+      return false unless column.set
+    return true
+
+  _retrySetColumnWidths: ->
+    for column, index in @_columnWidths
+      unless column then continue
+      unless column.set then @setColumnWidth index, column.width
+
 
   constructor: (element) ->
     try
@@ -101,12 +122,16 @@ class Fixtable
     catch e
       console.error 'Fixtable requires an element to bind to, e.g. new Fixtable(\'.fixtable\')'
 
+    @_columnWidths = []
+
   # move styles from <table> and <th> elements to their fixtable equivalents
   moveTableStyles: (attempts = 0) ->
 
     # defer up to 10x until header divs have been rendered to dom
-    return if ++attempts is 10
+    return if ++attempts > 10
+    @_log 'attempt', attempts, 'of 10 to move table styles'
     unless @_tableIsRendered()
+      @_log 'table not yet rendered; will try again momentarily'
       return setTimeout =>
         @moveTableStyles attempts
       , 0
@@ -138,9 +163,15 @@ class Fixtable
 
   setColumnWidth: (column, width, attempts = 0) ->
 
+    @_columnWidths[column] =
+      width: width
+      set: false
+
     # defer up to 10x until header divs have been rendered to dom
-    return if ++attempts is 10
+    return if ++attempts > 10
+    @_log 'attempt', attempts, 'of 10 to set width of column', column
     unless @_tableIsRendered()
+      @_log 'table not yet rendered; will try again momentarily'
       return setTimeout =>
         @setColumnWidth column, width, attempts
       , 1
@@ -148,14 +179,18 @@ class Fixtable
     selector = 'th:nth-of-type(' + column + ')'
     headerCell = @tableHeader.querySelectorAll(selector)[0]
     if typeof width is 'number' then width = parseInt(width) + 'px'
+    @_log 'setting width of column', column, 'to', width
     headerCell.style.width = width
+    @_columnWidths[column].set = true
     @table.style.tableLayout = 'fixed'
 
   setDimensions: (attempts = 0) ->
 
-    # defer up to 10x until header divs have been rendered to dom & styles circulated
-    return if ++attempts is 10
-    unless @_stylesCirculated and @_tableIsRendered()
+    # defer up to 10x until styles have been circulated
+    return if ++attempts > 10
+    unless @_stylesCirculated and @_checkColumnWidthsSet()
+      @moveTableStyles()
+      @_retrySetColumnWidths()
       return setTimeout =>
         @setDimensions attempts
       , 1

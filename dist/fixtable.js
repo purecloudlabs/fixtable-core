@@ -17,6 +17,8 @@
 var Fixtable;
 
 Fixtable = (function() {
+  Fixtable._DEBUG = false;
+
   Fixtable.prototype._bindElements = function(element) {
     this.fixtable = element;
     this.table = this.fixtable.querySelectorAll('table')[0];
@@ -37,8 +39,19 @@ Fixtable = (function() {
     })(this));
   };
 
+  Fixtable.prototype._log = function() {
+    var messages;
+    if (!this.constructor._DEBUG) {
+      return;
+    }
+    messages = Array.prototype.slice.call(arguments);
+    messages.unshift('[fixtable]');
+    return console.log.apply(console, messages);
+  };
+
   Fixtable.prototype._moveStyles = function(from, to) {
     var computed, i, len, results, style, styles;
+    this._log('moving styles from', from, 'to', to);
     styles = ['margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'border-top-color', 'border-top-style', 'border-top-width', 'border-right-color', 'border-right-style', 'border-right-width', 'border-bottom-color', 'border-bottom-style', 'border-bottom-width', 'border-left-color', 'border-left-style', 'border-left-width'];
     computed = window.getComputedStyle(from);
     results = [];
@@ -132,6 +145,39 @@ Fixtable = (function() {
     return headerDivs.length && headerDivs[0].offsetHeight;
   };
 
+  Fixtable.prototype._checkColumnWidthsSet = function() {
+    var column, i, index, len, ref;
+    ref = this._columnWidths;
+    for (index = i = 0, len = ref.length; i < len; index = ++i) {
+      column = ref[index];
+      if (!column) {
+        continue;
+      }
+      if (!column.set) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  Fixtable.prototype._retrySetColumnWidths = function() {
+    var column, i, index, len, ref, results;
+    ref = this._columnWidths;
+    results = [];
+    for (index = i = 0, len = ref.length; i < len; index = ++i) {
+      column = ref[index];
+      if (!column) {
+        continue;
+      }
+      if (!column.set) {
+        results.push(this.setColumnWidth(index, column.width));
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  };
+
   function Fixtable(element) {
     var e;
     try {
@@ -141,6 +187,7 @@ Fixtable = (function() {
       e = _error;
       console.error('Fixtable requires an element to bind to, e.g. new Fixtable(\'.fixtable\')');
     }
+    this._columnWidths = [];
   }
 
   Fixtable.prototype.moveTableStyles = function(attempts) {
@@ -148,10 +195,12 @@ Fixtable = (function() {
     if (attempts == null) {
       attempts = 0;
     }
-    if (++attempts === 10) {
+    if (++attempts > 10) {
       return;
     }
+    this._log('attempt', attempts, 'of 10 to move table styles');
     if (!this._tableIsRendered()) {
+      this._log('table not yet rendered; will try again momentarily');
       return setTimeout((function(_this) {
         return function() {
           return _this.moveTableStyles(attempts);
@@ -191,10 +240,16 @@ Fixtable = (function() {
     if (attempts == null) {
       attempts = 0;
     }
-    if (++attempts === 10) {
+    this._columnWidths[column] = {
+      width: width,
+      set: false
+    };
+    if (++attempts > 10) {
       return;
     }
+    this._log('attempt', attempts, 'of 10 to set width of column', column);
     if (!this._tableIsRendered()) {
+      this._log('table not yet rendered; will try again momentarily');
       return setTimeout((function(_this) {
         return function() {
           return _this.setColumnWidth(column, width, attempts);
@@ -206,7 +261,9 @@ Fixtable = (function() {
     if (typeof width === 'number') {
       width = parseInt(width) + 'px';
     }
+    this._log('setting width of column', column, 'to', width);
     headerCell.style.width = width;
+    this._columnWidths[column].set = true;
     return this.table.style.tableLayout = 'fixed';
   };
 
@@ -214,10 +271,12 @@ Fixtable = (function() {
     if (attempts == null) {
       attempts = 0;
     }
-    if (++attempts === 10) {
+    if (++attempts > 10) {
       return;
     }
-    if (!(this._stylesCirculated && this._tableIsRendered())) {
+    if (!(this._stylesCirculated && this._checkColumnWidthsSet())) {
+      this.moveTableStyles();
+      this._retrySetColumnWidths();
       return setTimeout((function(_this) {
         return function() {
           return _this.setDimensions(attempts);
