@@ -17,8 +17,6 @@
 var Fixtable;
 
 Fixtable = (function() {
-  Fixtable._DEBUG = false;
-
   Fixtable.prototype._bindElements = function(element) {
     this.fixtable = element;
     this.table = this.fixtable.querySelectorAll('table')[0];
@@ -41,7 +39,7 @@ Fixtable = (function() {
 
   Fixtable.prototype._log = function() {
     var messages;
-    if (!this.constructor._DEBUG) {
+    if (!this._DEBUG) {
       return;
     }
     messages = Array.prototype.slice.call(arguments);
@@ -178,8 +176,11 @@ Fixtable = (function() {
     return results;
   };
 
-  function Fixtable(element) {
+  function Fixtable(element, debugMode) {
     var e;
+    if (debugMode == null) {
+      debugMode = false;
+    }
     try {
       this._bindElements(element);
       this._bindEvents();
@@ -187,6 +188,7 @@ Fixtable = (function() {
       e = _error;
       console.error('Fixtable requires an element to bind to, e.g. new Fixtable(\'.fixtable\')');
     }
+    this._DEBUG = debugMode;
     this._columnWidths = [];
   }
 
@@ -274,15 +276,18 @@ Fixtable = (function() {
     if (++attempts > 10) {
       return;
     }
-    if (!(this._stylesCirculated && this._checkColumnWidthsSet())) {
+    this._log('attempt', attempts, 'of 10 to set dimensions');
+    if (!(this._stylesCirculated && this._checkColumnWidthsSet() && this._tableIsRendered())) {
       this.moveTableStyles();
       this._retrySetColumnWidths();
+      this._log('table styles / column widths not yet done; will try again momentarily');
       return setTimeout((function(_this) {
         return function() {
           return _this.setDimensions(attempts);
         };
       })(this), 1);
     }
+    this._log('proceeding to set dimensions');
     this._setColumnHeaderWidths();
     this._setHeaderHeight();
     this._setColumnFilterWidths();

@@ -1,7 +1,5 @@
 class Fixtable
 
-  @_DEBUG = false
-
   _bindElements: (element) ->
     @fixtable = element
     @table = @fixtable.querySelectorAll('table')[0]
@@ -19,7 +17,7 @@ class Fixtable
       resizeDebounce = setTimeout @setDimensions.bind(@), 100
 
   _log: ->
-    unless @constructor._DEBUG then return
+    unless @_DEBUG then return
     messages = Array::slice.call arguments
     messages.unshift '[fixtable]'
     console.log.apply console, messages
@@ -115,13 +113,14 @@ class Fixtable
       unless column.set then @setColumnWidth index, column.width
 
 
-  constructor: (element) ->
+  constructor: (element, debugMode = false) ->
     try
       @_bindElements element
       @_bindEvents()
     catch e
       console.error 'Fixtable requires an element to bind to, e.g. new Fixtable(\'.fixtable\')'
 
+    @_DEBUG = debugMode
     @_columnWidths = []
 
   # move styles from <table> and <th> elements to their fixtable equivalents
@@ -188,13 +187,16 @@ class Fixtable
 
     # defer up to 10x until styles have been circulated
     return if ++attempts > 10
-    unless @_stylesCirculated and @_checkColumnWidthsSet()
+    @_log 'attempt', attempts, 'of 10 to set dimensions'
+    unless @_stylesCirculated and @_checkColumnWidthsSet() and @_tableIsRendered()
       @moveTableStyles()
       @_retrySetColumnWidths()
+      @_log 'table styles / column widths not yet done; will try again momentarily'
       return setTimeout =>
         @setDimensions attempts
       , 1
 
+    @_log 'proceeding to set dimensions'
     @_setColumnHeaderWidths()
     @_setHeaderHeight()
     @_setColumnFilterWidths()
