@@ -10,6 +10,7 @@
 
 .fixtable-inner {
   overflow: auto;
+  max-height: 100%;
 }
 
 .fixtable table {
