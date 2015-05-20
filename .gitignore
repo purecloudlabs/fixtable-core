@@ -1,6 +1,7 @@
 ### Project ###
 .coverdata/
 .coverrun
+dist/
 doc/
 
 # Created by https://www.gitignore.io
