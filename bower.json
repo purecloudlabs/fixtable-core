@@ -11,7 +11,7 @@
     "Trezy <tre@trezy.com> (http://trezy.com)"
   ],
   "description": "A grid library to present tabular data",
-  "main": ["./css/fixtable.css", "dist/fixtable.min.js"],
+  "main": ["dist/fixtable.min.css", "dist/fixtable.min.js"],
   "moduleType": [
     "globals"
   ],
