@@ -64,8 +64,15 @@ class Fixtable
   _setColumnHeaderWidths: ->
     selector = 'tr.fixtable-column-headers th > div'
     divs = @tableHeader.querySelectorAll selector
-    for div in divs
+    for div, column in divs
       div.style.width = div.parentNode.offsetWidth + 'px'
+
+      # increase column width if header contents overflow
+      if div.scrollWidth > div.offsetWidth
+        @setColumnWidth column + 1, div.scrollWidth + 10
+
+        # override normal behavior of switching to fixed table layout
+        @table.style.tableLayout = 'auto'
 
   _setColumnFilterWidths: ->
     selector = 'tr.fixtable-column-filters th > div'
