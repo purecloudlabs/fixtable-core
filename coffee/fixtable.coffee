@@ -69,7 +69,7 @@ class Fixtable
 
       # increase column width if header contents overflow
       if div.scrollWidth > div.offsetWidth
-        @setColumnWidth column + 1, div.scrollWidth + 20
+        @setColumnWidth column + 1, div.scrollWidth + 25
 
         # override normal behavior of switching to fixed table layout
         @table.style.tableLayout = 'auto'
