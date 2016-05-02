@@ -89,4 +89,4 @@ Follow these steps if you'd like to check out and run the fixtable-core source.
 To build:
 - `grunt`
 
-You'll probably want to start with coffee/fixtable.coffee and css/fixtable.css, which are the CoffeeScript source file and stylesheet respectively.
+You'll probably want to start with coffee/fixtable.coffee and css/fixtable.css, which are the CoffeeScript source file and CSS stylesheet respectively.
