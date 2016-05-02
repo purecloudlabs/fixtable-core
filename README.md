@@ -60,7 +60,16 @@ fixtable.setDimensions();
 ```
 
 ### Fixed Header / Footer
+Fixtable's distinguishing feature is its support for scrollable content with a fixed header and footer. All you have to do is specify a height for the Fixtable, and the Fixtable code will take care of the rest.
 
+Sample CSS:
+```css
+#my-fixtable {
+  height: 400px;
+}
+```
+
+If the content is too long to fit, the content will become scrollable, but the header and footer will be fixed -- that is, always visible regardless of scrolling.
 
 ### Fixtable API
 
