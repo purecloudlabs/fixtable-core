@@ -67,12 +67,24 @@ class Fixtable
     for div, column in divs
       div.style.width = div.parentNode.offsetWidth + 'px'
 
+      headerCell = @tableHeader.querySelector 'th:nth-of-type(' + (column + 1) + ')'
+
       # increase column width if header contents overflow
       if div.scrollWidth > div.offsetWidth
         @setColumnWidth column + 1, div.scrollWidth + 25
+        headerCell.classList.add 'header-temp-width'
 
         # override normal behavior of switching to fixed table layout
         @table.style.tableLayout = 'auto'
+
+      # remove temporary header cell widths when contents no longer overflow
+      else if headerCell.classList.contains 'header-temp-width'
+        headerCell.style.width = ''
+        headerCell.classList.remove 'header-temp-width'
+
+    # return normal fixed table layout behavior if not temporary widths remain
+    unless @tableHeader.querySelectorAll('.header-temp-width').length
+      @table.style.tableLayout = 'fixed'
 
   _setColumnFilterWidths: ->
     selector = 'tr.fixtable-column-filters th > div'
