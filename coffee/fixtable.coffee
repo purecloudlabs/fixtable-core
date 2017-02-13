@@ -1,3 +1,12 @@
+class Logger
+  @log: ->
+    if @debugMode
+      messages = Array::slice.call arguments
+      messages.unshift '[fixtable]'
+      console.log.apply console, messages
+  @setDebugMode: (debugMode) ->
+    @debugMode = debugMode
+
 class Fixtable
 
   _bindElements: (element) ->
@@ -16,14 +25,8 @@ class Fixtable
       clearTimeout resizeDebounce
       resizeDebounce = setTimeout @setDimensions.bind(@), 100
 
-  _log: ->
-    unless @_DEBUG then return
-    messages = Array::slice.call arguments
-    messages.unshift '[fixtable]'
-    console.log.apply console, messages
-
   _moveStyles: (from, to) ->
-    @_log 'moving styles from', from, 'to', to
+    # @_log 'moving styles from', from, 'to', to
     styles = [
       'margin-top'
       'margin-right'
@@ -133,6 +136,8 @@ class Fixtable
 
 
   constructor: (element, debugMode = false) ->
+    Logger.setDebugMode debugMode
+    Logger.log 'initializing'
     try
       @_bindElements element
       @_bindEvents()
@@ -147,9 +152,9 @@ class Fixtable
 
     # defer up to 10x until header divs have been rendered to dom
     return if ++attempts > 10
-    @_log 'attempt', attempts, 'of 10 to move table styles'
+    # @_log 'attempt', attempts, 'of 10 to move table styles'
     unless @_tableIsRendered()
-      @_log 'table not yet rendered; will try again momentarily'
+      # @_log 'table not yet rendered; will try again momentarily'
       return setTimeout =>
         @moveTableStyles attempts
       , 0
@@ -187,9 +192,9 @@ class Fixtable
 
     # defer up to 10x until header divs have been rendered to dom
     return if ++attempts > 10
-    @_log 'attempt', attempts, 'of 10 to set width of column', column
+    # @_log 'attempt', attempts, 'of 10 to set width of column', column
     unless @_tableIsRendered()
-      @_log 'table not yet rendered; will try again momentarily'
+      # @_log 'table not yet rendered; will try again momentarily'
       return setTimeout =>
         @setColumnWidth column, width, attempts
       , 1
@@ -197,7 +202,7 @@ class Fixtable
     selector = 'th:nth-of-type(' + column + ')'
     headerCell = @tableHeader.querySelectorAll(selector)[0]
     if typeof width is 'number' then width = parseInt(width) + 'px'
-    @_log 'setting width of column', column, 'to', width
+    # @_log 'setting width of column', column, 'to', width
     headerCell.style.width = width
     @_columnWidths[column].set = true
     @table.style.tableLayout = 'fixed'
@@ -206,16 +211,16 @@ class Fixtable
 
     # defer up to 10x until styles have been circulated
     return if ++attempts > 10
-    @_log 'attempt', attempts, 'of 10 to set dimensions'
+    # @_log 'attempt', attempts, 'of 10 to set dimensions'
     unless @_stylesCirculated and @_checkColumnWidthsSet() and @_tableIsRendered()
       @moveTableStyles()
       @_retrySetColumnWidths()
-      @_log 'table styles / column widths not yet done; will try again momentarily'
+      # @_log 'table styles / column widths not yet done; will try again momentarily'
       return setTimeout =>
         @setDimensions attempts
       , 1
 
-    @_log 'proceeding to set dimensions'
+    # @_log 'proceeding to set dimensions'
     @_setColumnHeaderWidths()
     @_setHeaderHeight()
     @_setColumnFilterWidths()
