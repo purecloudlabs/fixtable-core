@@ -1,7 +1,7 @@
 class Element
 
   # static property listing all styles to be moved from one element to another
-  @movableStyles: do ->
+  @_movableStyles: do ->
     Array::concat.apply [], ['margin', 'padding', 'border'].map (property) ->
       ['Top', 'Right', 'Bottom', 'Left'].map (side) ->
         property + side
@@ -9,8 +9,8 @@ class Element
   # static method to move style properties from one element to another
   # (toElement can be left empty to simply remove styles from an element)
   @moveStyles: (fromElement, toElement) ->
-    toElement?.setStyles fromElement.getStyles @movableStyles
-    fromElement.setStyles @movableStyles.map (style) ->
+    toElement?.setStyles fromElement.getStyles @_movableStyles
+    fromElement.setStyles @_movableStyles.map (style) ->
       [style, '0']
 
   addClass: (cssClass) ->

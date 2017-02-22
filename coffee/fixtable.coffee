@@ -5,12 +5,12 @@ class Fixtable
 
   # static method factory for creating instance methods that will not run
   # until the component has fully rendered (deferring up to 10 times)
-  @postRenderFunction: (fnName, fn) ->
+  @_postRenderFunction: (fnName, fn) ->
     attempts = 0
     ->
       @logger.log fnName, arguments, 'attempt', ++attempts
       argumentsCopy = Array::slice.call arguments
-      if @isRendered()
+      if @_isRendered()
         fn.apply @, argumentsCopy
         attempts = 0
       else if attempts < 10
@@ -18,6 +18,37 @@ class Fixtable
         setTimeout (=> @[fnName].apply @, argumentsCopy), 1
       else
         attempts = 0
+
+  # re-run setDimensions() on window resize (with 100ms debounce)
+  _addResizeListener: ->
+    debounce = null
+    addEventListener 'resize', =>
+      clearTimeout debounce
+      debounce = setTimeout @setDimensions.bind(@), 100
+
+  # check whether at least one header label has rendered
+  _isRendered: ->
+    @element.getChild('th > div').getHeight()
+
+  # move styles from table elements to corresponding fixtable elements
+  _moveStyles: do ->
+    Fixtable._postRenderFunction '_moveStyles', ->
+      Element.moveStyles @tableElement, @element
+      @columnHeaders.getChildren('th').forEach (th) ->
+        Element.moveStyles th, th.getChild 'div'
+      @columnFilters.getChildren('th').forEach (th) ->
+        Element.moveStyles th
+      @element.addClass 'fixtable-styles-circulated'
+
+  # create element instance from key fixtable elements
+  _registerElements: do ->
+    Fixtable._postRenderFunction '_registerElements', ->
+      @tableElement = @element.getChild 'table'
+      @headerElement = @element.getChild '.fixtable-header'
+      @filtersElement = @element.getChild '.fixtable-filters'
+      @columnHeaders = @element.getChild 'tr.fixtable-column-headers'
+      @columnFilters = @element.getChild 'tr.fixtable-column-filters'
+      @footerElement = @element.getChild '.fixtable-footer'
 
   constructor: (element, debugMode = false) ->
 
@@ -33,40 +64,9 @@ class Fixtable
     @logger.log 'initializing'
 
     # do one-time setup
-    @addResizeListener()
-    @registerElements()
-    @moveStyles()
-
-  # re-run setDimensions() on window resize (with 100ms debounce)
-  addResizeListener: ->
-    debounce = null
-    addEventListener 'resize', =>
-      clearTimeout debounce
-      debounce = setTimeout @setDimensions.bind(@), 100
-
-  # check whether at least one header label has rendered
-  isRendered: ->
-    @element.getChild('th > div').getHeight()
-
-  # move styles from table elements to corresponding fixtable elements
-  moveStyles: do ->
-    Fixtable.postRenderFunction 'moveStyles', ->
-      Element.moveStyles @tableElement, @element
-      @columnHeaders.getChildren('th').forEach (th) ->
-        Element.moveStyles th, th.getChild 'div'
-      @columnFilters.getChildren('th').forEach (th) ->
-        Element.moveStyles th
-      @element.addClass 'fixtable-styles-circulated'
-
-  # create element instance from key fixtable elements
-  registerElements: do ->
-    Fixtable.postRenderFunction 'registerElements', ->
-      @tableElement = @element.getChild 'table'
-      @headerElement = @element.getChild '.fixtable-header'
-      @filtersElement = @element.getChild '.fixtable-filters'
-      @columnHeaders = @element.getChild 'tr.fixtable-column-headers'
-      @columnFilters = @element.getChild 'tr.fixtable-column-filters'
-      @footerElement = @element.getChild '.fixtable-footer'
+    @_addResizeListener()
+    @_registerElements()
+    @_moveStyles()
 
   # programmatically return scroll position to top of table
   scrollTop: ->
@@ -74,13 +74,13 @@ class Fixtable
 
   # set preferred width for a column (by column index, starting at 1)
   setColumnWidth: do ->
-    Fixtable.postRenderFunction 'setColumnWidth', (columnIndex, width) ->
+    Fixtable._postRenderFunction 'setColumnWidth', (columnIndex, width) ->
       @columnHeaders.getChild("th:nth-of-type(#{columnIndex})").setWidth width
       @tableElement.setStyle 'tableLayout', 'fixed'
 
   # re-calculate width and height of dynamic elements
   setDimensions: do ->
-    Fixtable.postRenderFunction 'setDimensions', ->
+    Fixtable._postRenderFunction 'setDimensions', ->
 
       headerCells = @columnHeaders.getChildren 'th'
       filterCells = @columnFilters.getChildren 'th'
