@@ -1,9 +1,8 @@
-module.exports = ( grunt, options ) ->
-  options:
-    sourceMap: true
-    extDot: 'last'
-    bare: true
-
+module.exports = (grunt, options) ->
   fixtable:
-    files:
-      'dist/fixtable.js': ['coffee/fixtable.coffee']
+    expand: true
+    flatten: false
+    cwd: 'coffee/'
+    src: ['**/*.coffee']
+    dest: 'temp'
+    ext: '.js'

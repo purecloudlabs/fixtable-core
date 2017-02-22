@@ -1,2 +1,3 @@
 module.exports = ( grunt, options ) ->
-  fixtable: 'dist'
+  dist: 'dist'
+  temp: 'temp'

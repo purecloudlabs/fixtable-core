@@ -21,13 +21,13 @@ module.exports =
 
 
   dev: [
-    'clean'
+    'clean:dist'
     'buildCSS'
     'buildJS'
   ]
 
   dist: [
-    'clean'
+    'clean:dist'
     'distCSS'
     'distJS'
   ]
@@ -43,7 +43,8 @@ module.exports =
 
   buildJS: [
     'coffee'
-    'umd'
+    'webpack'
+    'clean:temp'
   ]
 
 
