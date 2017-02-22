@@ -1,228 +1,144 @@
 class Logger
-  @log: ->
-    if @debugMode
-      messages = Array::slice.call arguments
-      messages.unshift '[fixtable]'
-      console.log.apply console, messages
-  @setDebugMode: (debugMode) ->
+  constructor: (debugMode = false, prefix = []) ->
     @debugMode = debugMode
+    @prefix = if prefix instanceof Array then prefix else [prefix]
+  log: ->
+    if @debugMode
+      console.log.apply console, Array::concat.apply @prefix, arguments
+
+class Element
+  @movableStyles: do ->
+    Array::concat.apply [], ['margin', 'padding', 'border'].map (property) ->
+      ['Top', 'Right', 'Bottom', 'Left'].map (side) -> property + side
+  @moveStyles: (fromElement, toElement) ->
+    toElement?.setStyles fromElement.getStyles @movableStyles
+    fromElement.setStyles @movableStyles.map (style) -> [style, '0']
+  addClass: (cssClass) -> @element?.classList.add cssClass
+  constructor: (element) -> @element = element
+  getChild: (selector) -> new Element @element?.querySelector selector
+  getChildren: (selector) ->
+    children = Array::slice.call @element?.querySelectorAll(selector) or []
+    children.map (child) -> new Element child
+  getHeight: -> @element?.offsetHeight or 0
+  getScrollWidth: -> @element?.scrollWidth or 0
+  getStyles: (properties) ->
+    if @element then computedStyle = getComputedStyle @element
+    properties.map (property) ->
+      [property, computedStyle?[property]]
+  getWidth: -> @element?.offsetWidth or 0
+  scrollTop: -> @element?.scrollTop = 0
+  setHeight: (height) -> @setStyle 'height', height
+  setStyle: (property, value) ->
+    if typeof value is 'number' then value = "#{parseInt(value)}px"
+    @element?.style[property] = value
+  setStyles: (pairs) ->
+    for [property, value] in pairs
+      @setStyle property, value
+  setWidth: (width) -> @setStyle 'width', width
 
 class Fixtable
 
-  _bindElements: (element) ->
-    @fixtable = element
-    @table = @fixtable.querySelectorAll('table')[0]
-    @tableHeader = @table.querySelectorAll('thead')[0]
-    @fixtableHeader = @fixtable.querySelectorAll('.fixtable-header')[0]
-    @fixtableInner = @fixtable.querySelectorAll('.fixtable-inner')[0]
-    @fixtableFilters = @fixtable.querySelectorAll('.fixtable-filters')[0]
-
-  _bindEvents: ->
-
-    # re-set dimensions on window resize (with 100ms debounce to throttle)
-    resizeDebounce = null
-    window.addEventListener 'resize', =>
-      clearTimeout resizeDebounce
-      resizeDebounce = setTimeout @setDimensions.bind(@), 100
-
-  _moveStyles: (from, to) ->
-    # @_log 'moving styles from', from, 'to', to
-    styles = [
-      'margin-top'
-      'margin-right'
-      'margin-bottom'
-      'margin-left'
-      'padding-top'
-      'padding-right'
-      'padding-bottom'
-      'padding-left'
-      'border-top-color'
-      'border-top-style'
-      'border-top-width'
-      'border-right-color'
-      'border-right-style'
-      'border-right-width'
-      'border-bottom-color'
-      'border-bottom-style'
-      'border-bottom-width'
-      'border-left-color'
-      'border-left-style'
-      'border-left-width'
-    ]
-    computed = window.getComputedStyle from
-    for style in styles
-      to.style[style] = computed.getPropertyValue style
-      from.style[style] = '0'
-
-  _getColumnHeaderMaxHeight: ->
-    selector = 'tr.fixtable-column-headers th > div'
-    divs = [].slice.call @tableHeader.querySelectorAll selector
-    Math.max.apply null, divs.map (div) -> div.offsetHeight
-
-  _getColumnFilterMaxHeight: ->
-    selector = 'tr.fixtable-column-filters th > div'
-    divs = [].slice.call @tableHeader.querySelectorAll selector
-    Math.max.apply null, divs.map (div) -> div.offsetHeight
-
-  _setColumnHeaderWidths: ->
-    selector = 'tr.fixtable-column-headers th > div'
-    divs = @tableHeader.querySelectorAll selector
-    for div, column in divs
-      div.style.width = div.parentNode.offsetWidth + 'px'
-
-      headerCell = @tableHeader.querySelector 'th:nth-of-type(' + (column + 1) + ')'
-
-      # increase column width if header contents overflow
-      if div.scrollWidth > div.offsetWidth
-        @setColumnWidth column + 1, div.scrollWidth + 25
-        headerCell.classList.add 'header-temp-width'
-
-        # override normal behavior of switching to fixed table layout
-        @table.style.tableLayout = 'auto'
-
-      # remove temporary header cell widths when contents no longer overflow
-      else if headerCell.classList.contains 'header-temp-width'
-        headerCell.style.width = ''
-        headerCell.classList.remove 'header-temp-width'
-
-    # return normal fixed table layout behavior if not temporary widths remain
-    unless @tableHeader.querySelectorAll('.header-temp-width').length
-      @table.style.tableLayout = 'fixed'
-
-  _setColumnFilterWidths: ->
-    selector = 'tr.fixtable-column-filters th > div'
-    divs = @tableHeader.querySelectorAll selector
-    for div in divs
-      div.style.width = div.parentNode.offsetWidth + 'px'
-
-  _setFixtablePadding: ->
-    topPadding = @fixtableHeader.offsetHeight + @fixtableFilters.offsetHeight
-    @fixtable.style.paddingTop = topPadding + 'px'
-    if fixtableFooter = @fixtable.querySelectorAll('.fixtable-footer')[0]
-      @fixtable.style.paddingBottom = fixtableFooter.offsetHeight + 'px'
-
-  _setHeaderHeight: ->
-    headerHeight = @_getColumnHeaderMaxHeight() + 'px'
-    @fixtableHeader.style.height = headerHeight
-
-  _setFiltersHeight: ->
-    filtersHeight = @_getColumnFilterMaxHeight() + 'px'
-    headerHeight = @fixtableHeader.style.height
-    if @fixtableFilters
-      @fixtableFilters.style.paddingTop = filtersHeight
-      @fixtableFilters.style.top = headerHeight
-    selector = 'tr.fixtable-column-filters th > div'
-    divs = @tableHeader.querySelectorAll selector
-    for div in divs
-      div.style.top = headerHeight
-
-  # check whether at least one header div is rendered in the dom
-  _tableIsRendered: ->
-    selector = 'tr.fixtable-column-headers th > div'
-    headerDivs = @fixtable.querySelectorAll selector
-    headerDivs.length and headerDivs[0].offsetHeight
-
-  # check whether all columns that attempted to set width were successful
-  _checkColumnWidthsSet: ->
-    for column, index in @_columnWidths
-      unless column then continue
-      return false unless column.set
-    return true
-
-  _retrySetColumnWidths: ->
-    for column, index in @_columnWidths
-      unless column then continue
-      unless column.set then @setColumnWidth index, column.width
-
+  @postRenderFunction: (fnName, fn) ->
+    attempts = 0
+    ->
+      @logger.log fnName, arguments, 'attempt', ++attempts
+      argumentsCopy = Array::slice.call arguments
+      if @isRendered()
+        fn.apply @, argumentsCopy
+        attempts = 0
+      else if attempts < 10
+        @logger.log "not yet rendered, deferring #{fnName}"
+        setTimeout (=> @[fnName].apply @, argumentsCopy), 1
+      else
+        attempts = 0
 
   constructor: (element, debugMode = false) ->
-    Logger.setDebugMode debugMode
-    Logger.log 'initializing'
-    try
-      @_bindElements element
-      @_bindEvents()
-    catch e
-      console.error 'Fixtable requires an element to bind to, e.g. new Fixtable(\'.fixtable\')'
+    unless element instanceof HTMLElement
+      throw new Error 'Fixtable requires root HTML element of component'
+    @element = new Element element
+    @logger = new Logger debugMode, ['[fixtable]', @element]
+    @logger.log 'initializing'
+    @addResizeListener()
+    @registerElements()
+    @moveStyles()
 
-    @_DEBUG = debugMode
-    @_columnWidths = []
+  # re-run setDimensions() on window resize (with 100ms debounce)
+  addResizeListener: ->
+    debounce = null
+    addEventListener 'resize', =>
+      clearTimeout debounce
+      debounce = setTimeout @setDimensions.bind(@), 100
 
-  # move styles from <table> and <th> elements to their fixtable equivalents
-  moveTableStyles: (attempts = 0) ->
+  isRendered: -> @element.getChild('th > div').getHeight()
 
-    # defer up to 10x until header divs have been rendered to dom
-    return if ++attempts > 10
-    # @_log 'attempt', attempts, 'of 10 to move table styles'
-    unless @_tableIsRendered()
-      # @_log 'table not yet rendered; will try again momentarily'
-      return setTimeout =>
-        @moveTableStyles attempts
-      , 0
+  # move styles from table elements to corresponding fixtable elements
+  moveStyles: do ->
+    Fixtable.postRenderFunction 'moveStyles', ->
+      Element.moveStyles @tableElement, @element
+      @columnHeaders.getChildren('th').forEach (th) ->
+        Element.moveStyles th, th.getChild 'div'
+      @columnFilters.getChildren('th').forEach (th) ->
+        Element.moveStyles th
+      @element.addClass 'fixtable-styles-circulated'
 
-    # only do this once
-    return if @_stylesCirculated
-    @fixtable.className += ' fixtable-styles-circulated'
-    @_stylesCirculated = true
+  # create element instance from key fixtable elements
+  registerElements: do ->
+    Fixtable.postRenderFunction 'registerElements', ->
+      @tableElement = @element.getChild 'table'
+      @headerElement = @element.getChild '.fixtable-header'
+      @filtersElement = @element.getChild '.fixtable-filters'
+      @columnHeaders = @element.getChild 'tr.fixtable-column-headers'
+      @columnFilters = @element.getChild 'tr.fixtable-column-filters'
+      @footerElement = @element.getChild '.fixtable-footer'
 
-    # move styles from table to .fixtable
-    @_moveStyles @table, @fixtable
+  # programmatically return scroll position to top of table
+  scrollTop: -> @element.getChild('.fixtable-inner').scrollTop()
 
-    # move styles from header cells to child divs
-    selector = 'tr.fixtable-column-headers th > div'
-    divs = @tableHeader.querySelectorAll selector
-    for div in divs
-      @_moveStyles div.parentNode, div
+  setColumnWidth: do ->
+    Fixtable.postRenderFunction 'setColumnWidth', (columnIndex, width) ->
+      @columnHeaders.getChild("th:nth-of-type(#{columnIndex})").setWidth width
+      @tableElement.setStyle 'tableLayout', 'fixed'
 
-    # remove styles from filter <th> elements
-    selector = 'tr.fixtable-column-filters th'
-    headerCells = @tableHeader.querySelectorAll selector
-    for cell in headerCells
-      cell.style.margin = '0'
-      cell.style.padding = '0'
-      cell.style.border = '0'
+  # re-calculate width and height of dynamic elements
+  setDimensions: do ->
+    Fixtable.postRenderFunction 'setDimensions', ->
 
-  scrollTop: ->
-    @fixtableInner.scrollTop = 0
+      headerCells = @columnHeaders.getChildren 'th'
+      filterCells = @columnFilters.getChildren 'th'
 
-  setColumnWidth: (column, width, attempts = 0) ->
+      # update width of column labels to match column width
+      headerCells.forEach (th) -> th.getChild('div').setWidth th.getWidth()
 
-    @_columnWidths[column] =
-      width: width
-      set: false
+      # update all column labels & header element to height of tallest label
+      tallestLabel = Math.max.apply null, headerCells.map (th) ->
+        th.getChild('div').getHeight()
+      headerCells.forEach (th) -> th.getChild('div').setHeight tallestLabel
+      @headerElement.setHeight tallestLabel
 
-    # defer up to 10x until header divs have been rendered to dom
-    return if ++attempts > 10
-    # @_log 'attempt', attempts, 'of 10 to set width of column', column
-    unless @_tableIsRendered()
-      # @_log 'table not yet rendered; will try again momentarily'
-      return setTimeout =>
-        @setColumnWidth column, width, attempts
-      , 1
+      # ensure column header labels don't overflow parent table cells
+      headerCells.forEach (th) =>
+        div = th.getChild 'div'
+        if div.getScrollWidth() > div.getWidth()
+          th.setWidth div.getScrollWidth() + 25
+          th.addClass 'header-temp-width'
+          @tableElement.setStyle 'tableLayout', 'auto'
 
-    selector = 'th:nth-of-type(' + column + ')'
-    headerCell = @tableHeader.querySelectorAll(selector)[0]
-    if typeof width is 'number' then width = parseInt(width) + 'px'
-    # @_log 'setting width of column', column, 'to', width
-    headerCell.style.width = width
-    @_columnWidths[column].set = true
-    @table.style.tableLayout = 'fixed'
+      # update width of filters to match column width
+      filterCells.forEach (th) -> th.getChild('div').setWidth th.getWidth()
 
-  setDimensions: (attempts = 0) ->
+      # update height and position of column filters
+      tallestFilter = Math.max.apply null, filterCells.map (th) ->
+        th.getChild('div').getHeight()
+      filterCells.forEach (th) ->
+        th.getChild('div').setHeight tallestFilter
+        th.getChild('div').setStyle 'top', tallestLabel
 
-    # defer up to 10x until styles have been circulated
-    return if ++attempts > 10
-    # @_log 'attempt', attempts, 'of 10 to set dimensions'
-    unless @_stylesCirculated and @_checkColumnWidthsSet() and @_tableIsRendered()
-      @moveTableStyles()
-      @_retrySetColumnWidths()
-      # @_log 'table styles / column widths not yet done; will try again momentarily'
-      return setTimeout =>
-        @setDimensions attempts
-      , 1
+      # update position of div behind column filters
+      @filtersElement.setStyle 'paddingTop', tallestFilter
+      @filtersElement.setStyle 'top', tallestLabel
 
-    # @_log 'proceeding to set dimensions'
-    @_setColumnHeaderWidths()
-    @_setHeaderHeight()
-    @_setColumnFilterWidths()
-    @_setFiltersHeight()
-    @_setFixtablePadding()
+      # set padding on fixtable element to clear space behind header & footer
+      paddingTop = @headerElement.getHeight() + @filtersElement.getHeight()
+      paddingBottom = @footerElement.getHeight()
+      @element.setStyle 'paddingTop', paddingTop
+      @element.setStyle 'paddingBottom', paddingBottom
