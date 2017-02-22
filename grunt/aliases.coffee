@@ -1,62 +1,36 @@
 module.exports =
   default: [
     'dist'
+    'watch'
   ]
-
-
-
-
-
-  test: [
-    'mochaTest:test'
-  ]
-
-  docs: [
-    'groc'
-    'mochaTest:coverage'
-  ]
-
-
-
-
-
-  dev: [
-    'clean:dist'
-    'buildCSS'
-    'buildJS'
-  ]
-
   dist: [
     'clean:dist'
     'distCSS'
     'distJS'
   ]
-
-
-
-
-
-  buildCSS: [
-    'copy:css'
-    'autoprefixer'
-  ]
-
-  buildJS: [
-    'coffee'
-    'webpack'
-    'clean:temp'
-  ]
-
-
-
-
-
   distCSS: [
     'buildCSS'
     'cssmin'
   ]
-
   distJS: [
     'buildJS'
     'uglify'
+  ]
+  buildCSS: [
+    'copy:css'
+    'autoprefixer'
+    'notify:css'
+  ]
+  buildJS: [
+    'coffee'
+    'webpack'
+    'clean:temp'
+    'notify:coffee'
+  ]
+  test: [
+    'mochaTest:test'
+  ]
+  docs: [
+    'groc'
+    'mochaTest:coverage'
   ]

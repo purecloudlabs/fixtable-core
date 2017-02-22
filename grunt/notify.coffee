@@ -2,7 +2,6 @@ module.exports = ( grunt, options ) ->
   coffee:
     options:
       message: 'coffeescript compiled'
-
-  sass:
+  css:
     options:
-      message: 'sass compiled'
+      message: 'css compiled'

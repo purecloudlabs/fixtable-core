@@ -4,13 +4,13 @@ module.exports = ( grunt, options ) ->
       'coffee/**/*.coffee'
     ]
     tasks: [
-      'buildJS'
+      'distJS'
     ]
 
-  sass:
+  css:
     files: [
-      'scss/**/*.scss'
+      'css/**/*.css'
     ]
     tasks: [
-      'buildCSS'
+      'distCSS'
     ]
