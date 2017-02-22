@@ -142,3 +142,8 @@ class Fixtable
       paddingBottom = @footerElement.getHeight()
       @element.setStyle 'paddingTop', paddingTop
       @element.setStyle 'paddingBottom', paddingBottom
+
+      # force browser to repaint column headers
+      @columnHeaders.setStyle 'display', 'none'
+      @columnHeaders.getHeight()
+      @columnHeaders.setStyle 'display', 'table-row'
