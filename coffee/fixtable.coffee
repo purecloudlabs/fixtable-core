@@ -3,6 +3,8 @@ Logger = require './logger'
 
 class Fixtable
 
+  # static method factory for creating instance methods that will not run
+  # until the component has fully rendered (deferring up to 10 times)
   @postRenderFunction: (fnName, fn) ->
     attempts = 0
     ->
@@ -18,11 +20,19 @@ class Fixtable
         attempts = 0
 
   constructor: (element, debugMode = false) ->
+
+    # ensure the component root html element was supplied
     unless element instanceof HTMLElement
       throw new Error 'Fixtable requires root HTML element of component'
+
+    # create an Element instance from the component root html element
     @element = new Element element
+
+    # configure logger and log init message
     @logger = new Logger debugMode, ['[fixtable]', @element]
     @logger.log 'initializing'
+
+    # do one-time setup
     @addResizeListener()
     @registerElements()
     @moveStyles()
@@ -34,7 +44,9 @@ class Fixtable
       clearTimeout debounce
       debounce = setTimeout @setDimensions.bind(@), 100
 
-  isRendered: -> @element.getChild('th > div').getHeight()
+  # check whether at least one header label has rendered
+  isRendered: ->
+    @element.getChild('th > div').getHeight()
 
   # move styles from table elements to corresponding fixtable elements
   moveStyles: do ->
@@ -57,8 +69,10 @@ class Fixtable
       @footerElement = @element.getChild '.fixtable-footer'
 
   # programmatically return scroll position to top of table
-  scrollTop: -> @element.getChild('.fixtable-inner').scrollTop()
+  scrollTop: ->
+    @element.getChild('.fixtable-inner').scrollTop()
 
+  # set preferred width for a column (by column index, starting at 1)
   setColumnWidth: do ->
     Fixtable.postRenderFunction 'setColumnWidth', (columnIndex, width) ->
       @columnHeaders.getChild("th:nth-of-type(#{columnIndex})").setWidth width
@@ -72,12 +86,14 @@ class Fixtable
       filterCells = @columnFilters.getChildren 'th'
 
       # update width of column labels to match column width
-      headerCells.forEach (th) -> th.getChild('div').setWidth th.getWidth()
+      headerCells.forEach (th) ->
+        th.getChild('div').setWidth th.getWidth()
 
       # update all column labels & header element to height of tallest label
       tallestLabel = Math.max.apply null, headerCells.map (th) ->
         th.getChild('div').getHeight()
-      headerCells.forEach (th) -> th.getChild('div').setHeight tallestLabel
+      headerCells.forEach (th) ->
+        th.getChild('div').setHeight tallestLabel
       @headerElement.setHeight tallestLabel
 
       # ensure column header labels don't overflow parent table cells
@@ -89,7 +105,8 @@ class Fixtable
           @tableElement.setStyle 'tableLayout', 'auto'
 
       # update width of filters to match column width
-      filterCells.forEach (th) -> th.getChild('div').setWidth th.getWidth()
+      filterCells.forEach (th) ->
+        th.getChild('div').setWidth th.getWidth()
 
       # update height and position of column filters
       tallestFilter = Math.max.apply null, filterCells.map (th) ->
