@@ -33,14 +33,16 @@ class Fixtable
   # move styles from table elements to corresponding fixtable elements
   _moveStyles: do ->
     Fixtable._postRenderFunction '_moveStyles', ->
-      Element.moveStyles @tableElement, @element
-      @columnHeaders.getChildren('th').forEach (th) ->
-        Element.moveStyles th, th.getChild 'div'
-      @columnFilters.getChildren('th').forEach (th) ->
-        Element.moveStyles th
-      @element.addClass 'fixtable-styles-circulated'
+      unless @stylesCirculated
+        Element.moveStyles @tableElement, @element
+        @columnHeaders.getChildren('th').forEach (th) ->
+          Element.moveStyles th, th.getChild 'div'
+        @columnFilters.getChildren('th').forEach (th) ->
+          Element.moveStyles th
+        @element.addClass 'fixtable-styles-circulated'
+        @stylesCirculated = true
 
-  # create element instance from key fixtable elements
+  # create element instances from key fixtable elements
   _registerElements: do ->
     Fixtable._postRenderFunction '_registerElements', ->
       @tableElement = @element.getChild 'table'
@@ -81,6 +83,10 @@ class Fixtable
   # re-calculate width and height of dynamic elements
   setDimensions: do ->
     Fixtable._postRenderFunction 'setDimensions', ->
+
+      unless @stylesCirculated
+        @_registerElements()
+        @_moveStyles()
 
       headerCells = @columnHeaders.getChildren 'th'
       filterCells = @columnFilters.getChildren 'th'
