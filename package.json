@@ -1,6 +1,6 @@
 {
   "name": "fixtable",
-  "version": "2.0",
+  "version": "2.0.1",
   "description": "A grid library to present tabular data",
   "main": [
     "./css/fixtable.css",
