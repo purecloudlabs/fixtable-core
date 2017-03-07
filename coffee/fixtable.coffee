@@ -91,6 +91,10 @@ class Fixtable
       headerCells = @columnHeaders.getChildren 'th'
       filterCells = @columnFilters.getChildren 'th'
 
+      # remove column label heights (so they're re-calculated on each pass)
+      headerCells.forEach (th) ->
+        th.getChild('div').setHeight 'auto'
+
       # update width of column labels to match column width
       headerCells.forEach (th) ->
         th.getChild('div').setWidth th.getWidth()
