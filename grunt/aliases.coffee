@@ -28,7 +28,7 @@ module.exports =
     'notify:coffee'
   ]
   test: [
-    'mochaTest:test'
+    'mocha_phantomjs:test'
   ]
   docs: [
     'groc'

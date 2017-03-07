@@ -31,6 +31,8 @@
   },
   "homepage": "https://github.com/MyPureCloud/fixtable",
   "devDependencies": {
+    "bootstrap": "^3.3.7",
+    "chai": "^3.5.0",
     "coffee-script": "^1.9.1",
     "grunt": "^0.4.5",
     "grunt-autoprefixer": "^2.2.0",
@@ -41,13 +43,18 @@
     "grunt-contrib-uglify": "^0.8.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-groc": "^0.5.0",
+    "grunt-mocha-phantomjs": "^4.0.0",
     "grunt-mocha-test": "^0.12.7",
     "grunt-notify": "^0.4.1",
     "grunt-releaseable": "0.0.16",
     "grunt-webpack": "^2.0.1",
     "load-grunt-config": "^0.16.0",
     "mocha": "^2.1.0",
+    "precommit-hook": "^3.0.0",
     "time-grunt": "^1.1.0",
     "webpack": "^2.2.1"
-  }
+  },
+  "pre-commit": [
+    "test"
+  ]
 }
