@@ -1,11 +1,10 @@
 {
   "name": "fixtable",
-  "version": "2.0.3",
+  "version": "2.0.5",
   "description": "A grid library to present tabular data",
   "scripts": {
     "test": "grunt test",
-    "prepublish": "grunt dist && git add dist/*",
-    "postinstall": "./node_modules/.bin/bower install && ./node_modules/.bin/bower prune"
+    "prepublish": "grunt dist && git add dist/*"
   },
   "repository": {
     "type": "git",
@@ -28,7 +27,6 @@
   "homepage": "https://github.com/MyPureCloud/fixtable",
   "devDependencies": {
     "bootstrap": "^3.3.7",
-    "bower": "^1.8.4",
     "chai": "^3.5.0",
     "coffee-script": "^1.9.1",
     "grunt": "^0.4.5",
