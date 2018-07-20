@@ -1,6 +1,6 @@
 {
   "name": "fixtable",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "description": "A grid library to present tabular data",
   "scripts": {
     "test": "grunt test",
