@@ -4,8 +4,7 @@
   "description": "A grid library to present tabular data",
   "scripts": {
     "test": "grunt test",
-    "prepublish": "grunt dist && git add dist/*",
-    "postinstall": "npm prune && bower install && bower prune"
+    "prepublish": "grunt dist && git add dist/*"
   },
   "repository": {
     "type": "git",
